@@ -1,0 +1,3 @@
+[submodule "vendor/opencost"]
+	path = vendor/opencost
+	url = https://github.com/opencost-de/opencost.git

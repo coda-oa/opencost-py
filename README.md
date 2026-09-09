@@ -88,12 +88,20 @@ constraints:
 - patterns — `Currency` is a three-letter ISO 4217 code, `DateFormat` is
   `YYYY`, `YYYY-MM` or `YYYY-MM-DD`.
 
-The package ships the official XSD files (`opencost.xsd`,
-`opencost_types.xsd`) so generated documents can be validated:
+### Validating generated documents
+
+The XSD is owned by the upstream [opencost repository](https://github.com/opencost-de/opencost)
+(`doc/opencost.xsd`). This package deliberately does **not** ship a copy —
+validate generated documents against the upstream schema, e.g. with
+[xmllint](https://xmlsoft.org/xmllint.html):
 
 ```bash
-xmllint --noout --schema $(python -c 'import opencost,os;print(os.path.dirname(opencost.__file__))')/opencost.xsd data.xml
+xmllint --noout --schema path/to/opencost/doc/opencost.xsd data.xml
 ```
+
+In this repository the upstream schema is pinned as a git submodule
+(`vendor/opencost`) and used by the test suite — it is a development-only
+dependency, never a runtime one.
 
 ## Serialization rules
 
@@ -110,6 +118,7 @@ xmllint --noout --schema $(python -c 'import opencost,os;print(os.path.dirname(o
 ## Development
 
 ```bash
+git submodule update --init   # pins upstream schema for the validation tests
 uv sync
 uv run pytest
 ```

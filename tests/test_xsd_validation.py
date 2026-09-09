@@ -1,22 +1,32 @@
-"""Validate serialized XML against the shipped openCost XSD with lxml."""
+"""Validate serialized XML against the authoritative openCost XSD (vendor/opencost submodule)."""
 
 from decimal import Decimal
-from pathlib import Path
 
 import pytest
 from lxml import etree
 
-import opencost
-from opencost import Data, to_xml
+from opencost import (
+    BibliographicInformation,
+    ContractCostDataType,
+    ContractInvoiceGroupType,
+    ContractInvoicePeriodType,
+    ContractPrimaryIdentifier,
+    Data,
+    Dates,
+    PartOfContractType,
+    PublicationAmountPaidType,
+    PublicationAmountsPaid,
+    PublicationCostDataType,
+    PublicationInvoiceType,
+    PublicationPrimaryIdentifier,
+    to_xml,
+)
 from test_xml_generation import make_contract, make_publication
-
-XSD_PATH = Path(opencost.__file__).parent / "opencost.xsd"
 
 
 @pytest.fixture(scope="module")
-def schema() -> etree.XMLSchema:
-    assert XSD_PATH.is_file(), "opencost.xsd must ship inside the package"
-    return etree.XMLSchema(etree.parse(str(XSD_PATH)))
+def schema(schema_path) -> etree.XMLSchema:
+    return etree.XMLSchema(etree.parse(str(schema_path)))
 
 
 def assert_valid(schema: etree.XMLSchema, data: Data) -> None:
@@ -42,8 +52,6 @@ def test__mixed_document__validates_against_xsd(schema: etree.XMLSchema) -> None
 def test__publication_without_doi__validates_against_xsd(
     schema: etree.XMLSchema,
 ) -> None:
-    from opencost import BibliographicInformation, PublicationPrimaryIdentifier
-
     pub = make_publication(
         primary_identifier=PublicationPrimaryIdentifier(
             bibliographic_information=BibliographicInformation(
@@ -59,12 +67,6 @@ def test__publication_without_doi__validates_against_xsd(
 def test__publication_part_of_contract__validates_against_xsd(
     schema: etree.XMLSchema,
 ) -> None:
-    from opencost import (
-        ContractPrimaryIdentifier,
-        PartOfContractType,
-        PublicationCostDataType,
-    )
-
     pub = make_publication(
         cost_data=PublicationCostDataType(
             part_of_contract=PartOfContractType(
@@ -78,12 +80,6 @@ def test__publication_part_of_contract__validates_against_xsd(
 def test__contract_without_invoices_in_group__validates_against_xsd(
     schema: etree.XMLSchema,
 ) -> None:
-    from opencost import (
-        ContractCostDataType,
-        ContractInvoiceGroupType,
-        ContractInvoicePeriodType,
-    )
-
     contract = make_contract()
     contract.cost_data = ContractCostDataType(
         invoice_group=[
@@ -99,14 +95,6 @@ def test__contract_without_invoices_in_group__validates_against_xsd(
 def test__negative_amount_denotes_reimbursement__validates_against_xsd(
     schema: etree.XMLSchema,
 ) -> None:
-    from opencost import (
-        Dates,
-        PublicationAmountPaidType,
-        PublicationAmountsPaid,
-        PublicationCostDataType,
-        PublicationInvoiceType,
-    )
-
     pub = make_publication(
         cost_data=PublicationCostDataType(
             invoice=[
@@ -126,3 +114,21 @@ def test__negative_amount_denotes_reimbursement__validates_against_xsd(
         )
     )
     assert_valid(schema, Data(publication=[pub]))
+
+
+def test__official_example_documents__validate_against_pinned_schema(
+    schema: etree.XMLSchema, example_docs: list
+) -> None:
+    """The upstream examples must validate against the pinned schema commit.
+
+    Guards that the submodule pin still matches the documents our models
+    are designed to serialize.
+    """
+    assert example_docs, "no example documents found in submodule"
+    invalid = []
+    for path in example_docs:
+        try:
+            schema.assertValid(etree.parse(str(path)))
+        except etree.XMLSyntaxError:
+            invalid.append(path.name)
+    assert not invalid, f"examples invalid against pinned schema: {invalid}"
