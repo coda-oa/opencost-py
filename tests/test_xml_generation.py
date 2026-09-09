@@ -221,8 +221,7 @@ def make_contract(group_id: str = "010zzcb52-deal_de_1234-2026") -> ContractType
     return ContractType(
         contract_name="DEAL",
         institution=make_institution(),
-        # "from" is an alias; pydantic v2 validates by alias only.
-        participation=ParticipationType(**{"from": "2024-01-01", "to": "2024-12-31"}),
+        participation=ParticipationType(from_="2024-01-01", to="2024-12-31"),
         primary_identifier=ContractPrimaryIdentifier(type="ESAC", value="deal_de_1234"),
         secondary_identifiers=ContractSecondaryIdentifiersType(
             id=[ContractSecondaryIdType(type="local", value="L-1")]
@@ -231,9 +230,7 @@ def make_contract(group_id: str = "010zzcb52-deal_de_1234-2026") -> ContractType
             invoice_group=[
                 ContractInvoiceGroupType(
                     group_id=group_id,
-                    invoices_period=ContractInvoicePeriodType(
-                        **{"from": "2024-01-01", "to": "2024-12-31"}
-                    ),
+                    invoices_period=ContractInvoicePeriodType(from_="2024-01-01", to="2024-12-31"),
                     invoice=[
                         ContractInvoiceType(
                             invoice_number="INV-C-1",

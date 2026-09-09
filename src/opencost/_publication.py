@@ -3,13 +3,13 @@ from __future__ import annotations
 from enum import Enum
 from typing import Self
 
-from pydantic import BaseModel, model_validator
+from pydantic import model_validator
 
 from ._contract import ContractPrimaryIdentifier
 from ._institution import InstitutionType
 from ._invoice import PublicationInvoiceType
 from ._types import NonEmptyString
-from ._validators import EitherFieldMixin, RequiredList
+from ._validators import EitherFieldMixin, OpenCostModel, RequiredList
 
 
 class CoarPublicationType(Enum):
@@ -129,22 +129,22 @@ class PublicationSecondaryIdTypeEnum(Enum):
     local = "local"
 
 
-class PublicationSecondaryIdType(BaseModel):
+class PublicationSecondaryIdType(OpenCostModel):
     value: NonEmptyString
     type: PublicationSecondaryIdTypeEnum
 
 
-class PublicationSecondaryIdentifiers(BaseModel):
+class PublicationSecondaryIdentifiers(OpenCostModel):
     id: RequiredList[PublicationSecondaryIdType]
 
 
-class BibliographicInformation(BaseModel):
+class BibliographicInformation(OpenCostModel):
     Title: NonEmptyString
     Publisher: NonEmptyString
     isPartOf: NonEmptyString
 
 
-class PublicationPrimaryIdentifier(BaseModel):
+class PublicationPrimaryIdentifier(OpenCostModel):
     doi: NonEmptyString | None = None
     bibliographic_information: BibliographicInformation | None = None
 
@@ -155,7 +155,7 @@ class PublicationPrimaryIdentifier(BaseModel):
         return self
 
 
-class PartOfContractType(BaseModel):
+class PartOfContractType(OpenCostModel):
     group_id: NonEmptyString | None = None
     primary_identifier: ContractPrimaryIdentifier
 
@@ -166,7 +166,7 @@ class PublicationCostDataType(EitherFieldMixin):
     part_of_contract: PartOfContractType | None = None
 
 
-class PublicationType(BaseModel):
+class PublicationType(OpenCostModel):
     primary_identifier: PublicationPrimaryIdentifier
     secondary_identifiers: PublicationSecondaryIdentifiers | None = None
     institution: InstitutionType

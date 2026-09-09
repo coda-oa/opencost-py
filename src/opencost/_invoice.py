@@ -1,23 +1,23 @@
 from decimal import Decimal
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from ._types import ContractCostType, Currency, DateFormat, NonEmptyString, PublicationCostType
-from ._validators import EitherFieldMixin, RequiredList
+from ._validators import EitherFieldMixin, OpenCostModel, RequiredList
 
 
-class PublicationAmountPaidType(BaseModel):
+class PublicationAmountPaidType(OpenCostModel):
     currency: Currency
     amount: Decimal
     cost_type: PublicationCostType
     vat: Decimal | None = None
 
 
-class PublicationAmountsPaid(BaseModel):
+class PublicationAmountsPaid(OpenCostModel):
     amount_paid: RequiredList[PublicationAmountPaidType]
 
 
-class AmountInvoice(BaseModel):
+class AmountInvoice(OpenCostModel):
     currency: Currency
     amount: Decimal
 
@@ -29,7 +29,7 @@ class Dates(EitherFieldMixin):
     paid: DateFormat | None = None
 
 
-class PublicationInvoiceType(BaseModel):
+class PublicationInvoiceType(OpenCostModel):
     amount_invoice: AmountInvoice | None = None
     invoice_number: NonEmptyString | None = None
     amounts_paid: PublicationAmountsPaid
@@ -37,18 +37,18 @@ class PublicationInvoiceType(BaseModel):
     creditor: NonEmptyString | None = None
 
 
-class ContractAmountPaidType(BaseModel):
+class ContractAmountPaidType(OpenCostModel):
     currency: Currency
     amount: Decimal
     cost_type: ContractCostType
     vat: Decimal | None = None
 
 
-class ContractAmountsPaid(BaseModel):
+class ContractAmountsPaid(OpenCostModel):
     amount_paid: RequiredList[ContractAmountPaidType]
 
 
-class ContractInvoiceType(BaseModel):
+class ContractInvoiceType(OpenCostModel):
     amount_invoice: AmountInvoice | None = None
     invoice_number: NonEmptyString | None = None
     creditor: NonEmptyString | None = None
@@ -56,16 +56,16 @@ class ContractInvoiceType(BaseModel):
     amounts_paid: ContractAmountsPaid
 
 
-class ContractInvoicePeriodType(BaseModel):
+class ContractInvoicePeriodType(OpenCostModel):
     from_: DateFormat = Field(..., alias="from")
     to: DateFormat
 
 
-class ContractInvoiceGroupType(BaseModel):
+class ContractInvoiceGroupType(OpenCostModel):
     group_id: NonEmptyString
     invoices_period: ContractInvoicePeriodType
     invoice: list[ContractInvoiceType] | None = None
 
 
-class ContractCostDataType(BaseModel):
+class ContractCostDataType(OpenCostModel):
     invoice_group: RequiredList[ContractInvoiceGroupType]

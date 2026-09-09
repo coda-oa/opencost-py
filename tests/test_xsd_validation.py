@@ -85,7 +85,7 @@ def test__contract_without_invoices_in_group__validates_against_xsd(
         invoice_group=[
             ContractInvoiceGroupType(
                 group_id="g-1",
-                invoices_period=ContractInvoicePeriodType(**{"from": "2024", "to": "2024-12"}),
+                invoices_period=ContractInvoicePeriodType(from_="2024", to="2024-12"),
             )
         ]
     )

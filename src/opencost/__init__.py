@@ -47,6 +47,7 @@ from ._publication import CoarPublicationType as CoarPublicationType
 from ._publication import PublicationCostDataType as PublicationCostDataType
 from ._publication import PartOfContractType as PartOfContractType
 from ._validators import EitherFieldMixin as EitherFieldMixin
+from ._validators import OpenCostModel as OpenCostModel
 from ._xml import NAMESPACE as NAMESPACE
 from ._xml import to_xml as to_xml
 
@@ -87,9 +88,9 @@ __all__ = [
     "PublicationSecondaryIdentifiers",
     "BibliographicInformation",
     "CoarPublicationType",
-    "PublicationCostDataType",
-    "PartOfContractType",
     "EitherFieldMixin",
+    "OpenCostModel",
+    "PartOfContractType",
     "NAMESPACE",
     "to_xml",
 ]

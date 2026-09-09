@@ -86,7 +86,10 @@ constraints:
 - exactly-one rules — `PublicationPrimaryIdentifier` takes a `doi` **or** a
   `bibliographic_information` block, never both or neither;
 - patterns — `Currency` is a three-letter ISO 4217 code, `DateFormat` is
-  `YYYY`, `YYYY-MM` or `YYYY-MM-DD`.
+  `YYYY`, `YYYY-MM` or `YYYY-MM-DD`;
+- strict model config — unknown/misspelled fields are rejected
+  (`extra="forbid"`), and aliased fields accept both the Python name and
+  the wire alias (`from_` or `from`).
 
 ### Validating generated documents
 

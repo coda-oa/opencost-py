@@ -1,18 +1,18 @@
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from ._institution import InstitutionType
 from ._invoice import ContractCostDataType
 from ._types import DateFormat, NonEmptyString
-from ._validators import RequiredList
+from ._validators import OpenCostModel, RequiredList
 
 
 class ContractPrimaryIdentifierType(Enum):
     ESAC = "ESAC"
 
 
-class ContractPrimaryIdentifier(BaseModel):
+class ContractPrimaryIdentifier(OpenCostModel):
     value: NonEmptyString
     type: ContractPrimaryIdentifierType
 
@@ -23,21 +23,21 @@ class ContractSecondaryIdTypeEnum(Enum):
     local = "local"
 
 
-class ContractSecondaryIdType(BaseModel):
+class ContractSecondaryIdType(OpenCostModel):
     value: NonEmptyString
     type: ContractSecondaryIdTypeEnum
 
 
-class ContractSecondaryIdentifiersType(BaseModel):
+class ContractSecondaryIdentifiersType(OpenCostModel):
     id: RequiredList[ContractSecondaryIdType]
 
 
-class ParticipationType(BaseModel):
+class ParticipationType(OpenCostModel):
     to: DateFormat
     from_: DateFormat = Field(..., alias="from")
 
 
-class ContractType(BaseModel):
+class ContractType(OpenCostModel):
     contract_name: NonEmptyString
     institution: InstitutionType
     participation: ParticipationType

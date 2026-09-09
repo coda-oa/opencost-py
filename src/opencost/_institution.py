@@ -1,9 +1,7 @@
 from enum import Enum
 
-from pydantic import BaseModel
-
 from ._types import NonEmptyString
-from ._validators import EitherFieldMixin
+from ._validators import EitherFieldMixin, OpenCostModel
 
 
 class InstitutionIdType(Enum):
@@ -12,7 +10,7 @@ class InstitutionIdType(Enum):
     ringold = "ringold"
 
 
-class InstitutionId(BaseModel):
+class InstitutionId(OpenCostModel):
     value: NonEmptyString
     type: InstitutionIdType
 
@@ -22,7 +20,7 @@ class InstitutionNameType(Enum):
     short = "short"
 
 
-class InstitutionName(BaseModel):
+class InstitutionName(OpenCostModel):
     value: NonEmptyString
     type: InstitutionNameType
 
