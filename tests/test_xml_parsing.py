@@ -53,7 +53,8 @@ def test__minimal_document__parses_to_typed_models() -> None:
     data = from_xml(MINIMAL)
 
     assert isinstance(data, Data)
-    (pub,) = data.publication
+    assert data.publication is not None and len(data.publication) == 1
+    pub = data.publication[0]
     assert pub is not None
     assert pub.primary_identifier.doi == "10.1234/abcd"
     assert pub.publication_type is CoarPublicationType.journal_article
@@ -64,7 +65,8 @@ def test__minimal_document__parses_to_typed_models() -> None:
     assert institution.id[0].type is InstitutionIdType.ror
     assert institution.name[0].type is InstitutionNameType.full
 
-    (invoice,) = pub.cost_data.invoice or ()
+    assert pub.cost_data.invoice is not None and len(pub.cost_data.invoice) == 1
+    invoice = pub.cost_data.invoice[0]
     assert invoice.invoice_number == "INV-1"
     assert invoice.creditor is None  # optional element absent
     assert invoice.dates.paid == "2026"
@@ -100,7 +102,7 @@ def test__alias_from__parses_back_to_python_name() -> None:
     assert parsed.contract is not None
     assert parsed.contract[0].participation == ParticipationType(
         from_="2024-01-01", to="2024-12-31"
-    )
+    )  # type: ignore[call-arg]
 
 
 def test__unknown_element__is_rejected() -> None:

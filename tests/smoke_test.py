@@ -83,7 +83,7 @@ def main() -> None:
 
     # shipped strictness: unknown fields and unknown elements are rejected
     try:
-        AmountInvoice(amount=Decimal("1"), currency="EUR", amout=Decimal("9"))
+        AmountInvoice(amount=Decimal("1"), currency="EUR", amout=Decimal("9"))  # type: ignore[call-arg]
     except ValueError:
         pass
     else:

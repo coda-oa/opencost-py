@@ -13,27 +13,34 @@ from opencost import (
     ContractAmountPaidType,
     ContractAmountsPaid,
     ContractCostDataType,
+    ContractCostType,
     ContractInvoiceGroupType,
     ContractInvoicePeriodType,
     ContractInvoiceType,
     ContractPrimaryIdentifier,
+    ContractPrimaryIdentifierType,
     ContractSecondaryIdentifiersType,
     ContractSecondaryIdType,
+    ContractSecondaryIdTypeEnum,
     ContractType,
     Data,
     Dates,
     InstitutionId,
+    InstitutionIdType,
     InstitutionName,
+    InstitutionNameType,
     InstitutionType,
     ParticipationType,
     PartOfContractType,
     PublicationAmountPaidType,
     PublicationAmountsPaid,
     PublicationCostDataType,
+    PublicationCostType,
     PublicationInvoiceType,
     PublicationPrimaryIdentifier,
     PublicationSecondaryIdentifiers,
     PublicationSecondaryIdType,
+    PublicationSecondaryIdTypeEnum,
     PublicationType,
     to_xml,
 )
@@ -49,8 +56,8 @@ def find(root: ET.Element, path: str) -> ET.Element:
 
 def make_institution() -> InstitutionType:
     return InstitutionType(
-        id=[InstitutionId(type="ror", value="010zzcb52")],
-        name=[InstitutionName(type="full", value="TU Braunschweig")],
+        id=[InstitutionId(type=InstitutionIdType.ror, value="010zzcb52")],
+        name=[InstitutionName(type=InstitutionNameType.full, value="TU Braunschweig")],
     )
 
 
@@ -60,7 +67,7 @@ def make_amounts_paid() -> PublicationAmountsPaid:
             PublicationAmountPaidType(
                 amount=Decimal("1650.00"),
                 currency="EUR",
-                cost_type="gold-oa",
+                cost_type=PublicationCostType.gold_oa,
                 vat=Decimal("342.00"),
             )
         ]
@@ -78,14 +85,14 @@ def make_invoice(number: str = "INV-4711") -> PublicationInvoiceType:
 
 
 def make_publication(**overrides: object) -> PublicationType:
-    kwargs: dict = {
+    kwargs: dict[str, object] = {
         "primary_identifier": PublicationPrimaryIdentifier(doi="10.1234/abcd"),
         "institution": make_institution(),
         "publication_type": CoarPublicationType.journal_article,
         "cost_data": PublicationCostDataType(invoice=[make_invoice()]),
     }
     kwargs.update(overrides)
-    return PublicationType(**kwargs)
+    return PublicationType(**kwargs)  # type: ignore[arg-type]
 
 
 def parse(data: Data) -> ET.Element:
@@ -181,8 +188,10 @@ def test__repeated_fields__become_sibling_elements() -> None:
     pub = make_publication(
         secondary_identifiers=PublicationSecondaryIdentifiers(
             id=[
-                PublicationSecondaryIdType(type="pmid", value="12345"),
-                PublicationSecondaryIdType(type="handle", value="abc/1"),
+                PublicationSecondaryIdType(type=PublicationSecondaryIdTypeEnum.pmid, value="12345"),
+                PublicationSecondaryIdType(
+                    type=PublicationSecondaryIdTypeEnum.handle, value="abc/1"
+                ),
             ]
         ),
         cost_data=PublicationCostDataType(invoice=[make_invoice("INV-1"), make_invoice("INV-2")]),
@@ -204,7 +213,9 @@ def test__publication_part_of_contract__links_group_id() -> None:
     pub = make_publication(
         cost_data=PublicationCostDataType(
             part_of_contract=PartOfContractType(
-                primary_identifier=ContractPrimaryIdentifier(type="ESAC", value="deal_de_1234"),
+                primary_identifier=ContractPrimaryIdentifier(
+                    type=ContractPrimaryIdentifierType.ESAC, value="deal_de_1234"
+                ),
                 group_id="010zzcb52-deal_de_1234-2026",
             )
         )
@@ -221,16 +232,18 @@ def make_contract(group_id: str = "010zzcb52-deal_de_1234-2026") -> ContractType
     return ContractType(
         contract_name="DEAL",
         institution=make_institution(),
-        participation=ParticipationType(from_="2024-01-01", to="2024-12-31"),
-        primary_identifier=ContractPrimaryIdentifier(type="ESAC", value="deal_de_1234"),
+        participation=ParticipationType(from_="2024-01-01", to="2024-12-31"),  # type: ignore[call-arg]
+        primary_identifier=ContractPrimaryIdentifier(
+            type=ContractPrimaryIdentifierType.ESAC, value="deal_de_1234"
+        ),
         secondary_identifiers=ContractSecondaryIdentifiersType(
-            id=[ContractSecondaryIdType(type="local", value="L-1")]
+            id=[ContractSecondaryIdType(type=ContractSecondaryIdTypeEnum.local, value="L-1")]
         ),
         cost_data=ContractCostDataType(
             invoice_group=[
                 ContractInvoiceGroupType(
                     group_id=group_id,
-                    invoices_period=ContractInvoicePeriodType(from_="2024-01-01", to="2024-12-31"),
+                    invoices_period=ContractInvoicePeriodType(from_="2024-01-01", to="2024-12-31"),  # type: ignore[call-arg]
                     invoice=[
                         ContractInvoiceType(
                             invoice_number="INV-C-1",
@@ -241,7 +254,7 @@ def make_contract(group_id: str = "010zzcb52-deal_de_1234-2026") -> ContractType
                                     ContractAmountPaidType(
                                         amount=Decimal("100000.00"),
                                         currency="EUR",
-                                        cost_type="publish and read",
+                                        cost_type=ContractCostType.publish_and_read,
                                     )
                                 ]
                             ),
@@ -289,7 +302,9 @@ def test__data__mixes_publications_and_contracts() -> None:
     linked_publication = make_publication(
         cost_data=PublicationCostDataType(
             part_of_contract=PartOfContractType(
-                primary_identifier=ContractPrimaryIdentifier(type="ESAC", value="deal_de_1234"),
+                primary_identifier=ContractPrimaryIdentifier(
+                    type=ContractPrimaryIdentifierType.ESAC, value="deal_de_1234"
+                ),
                 group_id=group_id,
             )
         )

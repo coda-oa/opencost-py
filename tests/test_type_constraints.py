@@ -109,18 +109,18 @@ def test__dates__accept_only_xs_date_formats() -> None:
 def test__unknown_fields__are_rejected() -> None:
     # extra="forbid": misspelled/unknown kwargs fail loudly, never silently dropped.
     with pytest.raises(ValueError):
-        _ = AmountInvoice(amount=Decimal("1.00"), currency="EUR", amout=Decimal("999"))
+        _ = AmountInvoice(amount=Decimal("1.00"), currency="EUR", amout=Decimal("999"))  # type: ignore[call-arg]
 
 
 def test__aliased_fields__construct_by_python_name_or_alias() -> None:
     from opencost import ParticipationType
 
-    by_name = ParticipationType(from_="2024-01-01", to="2024-12-31")
+    by_name = ParticipationType(from_="2024-01-01", to="2024-12-31")  # type: ignore[call-arg]
     by_alias = ParticipationType(**{"from": "2024-01-01", "to": "2024-12-31"})
     assert by_name == by_alias
 
 
 def test__enum_fields__accept_wire_values() -> None:
     # CoarPublicationType / cost types accept their XSD strings directly.
-    identifier = PublicationSecondaryIdentifiers(id=[{"type": "pmid", "value": "123"}])
+    identifier = PublicationSecondaryIdentifiers(id=[{"type": "pmid", "value": "123"}])  # type: ignore[list-item]
     assert identifier.id[0].type.value == "pmid"
