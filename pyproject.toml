@@ -1,0 +1,47 @@
+[project]
+name = "opencost"
+version = "0.1.0"
+description = "Pydantic models for the openCost publication-cost metadata schema, with XML serialization"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [
+    { name = "Sergej Wildemann", email = "s.wildemann@tu-braunschweig.de" }
+]
+keywords = ["openCost", "scholarly publishing", "APC", "metadata", "pydantic", "XML"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed",
+]
+
+dependencies = ["pydantic>=2.8"]
+
+[dependency-groups]
+dev = [
+    "lxml>=5.0",
+    "pytest>=8.0",
+    "ruff>=0.9",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/opencost/__init__.py" = ["I001", "RUF022"]
