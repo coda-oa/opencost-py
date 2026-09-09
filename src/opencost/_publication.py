@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Self
+from typing import Annotated, Self
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 
 from ._contract import ContractPrimaryIdentifier
 from ._institution import InstitutionType
 from ._invoice import PublicationInvoiceType
 from ._types import NonEmptyString
-from ._validators import EitherFieldMixin, OpenCostModel, RequiredList
+from ._validators import EitherFieldMixin, OpenCostModel
 
 
 class CoarPublicationType(Enum):
@@ -135,7 +135,7 @@ class PublicationSecondaryIdType(OpenCostModel):
 
 
 class PublicationSecondaryIdentifiers(OpenCostModel):
-    id: RequiredList[PublicationSecondaryIdType]
+    id: Annotated[list[PublicationSecondaryIdType], Field(min_length=1)]
 
 
 class BibliographicInformation(OpenCostModel):

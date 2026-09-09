@@ -1,4 +1,4 @@
-"""XML serialization for the openCost domain models.
+"""Serialization: openCost domain models -> XML.
 
 The whole openCost XML shape is derived from the pydantic models
 themselves, so no per-type serialize functions are needed.
@@ -13,9 +13,8 @@ from xml.etree import ElementTree as ET
 
 from pydantic import BaseModel
 
-from ._common import Data
-
-NAMESPACE = "https://opencost.de"
+from .._common import Data
+from ._common import NAMESPACE
 
 
 def _text(value: object) -> str:

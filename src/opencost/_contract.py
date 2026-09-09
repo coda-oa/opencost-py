@@ -1,11 +1,12 @@
 from enum import Enum
+from typing import Annotated
 
 from pydantic import Field
 
 from ._institution import InstitutionType
 from ._invoice import ContractCostDataType
 from ._types import DateFormat, NonEmptyString
-from ._validators import OpenCostModel, RequiredList
+from ._validators import OpenCostModel
 
 
 class ContractPrimaryIdentifierType(Enum):
@@ -29,7 +30,7 @@ class ContractSecondaryIdType(OpenCostModel):
 
 
 class ContractSecondaryIdentifiersType(OpenCostModel):
-    id: RequiredList[ContractSecondaryIdType]
+    id: Annotated[list[ContractSecondaryIdType], Field(min_length=1)]
 
 
 class ParticipationType(OpenCostModel):

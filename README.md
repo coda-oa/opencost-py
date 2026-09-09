@@ -21,7 +21,7 @@ uv add opencost   # or: pip install opencost
 
 ## Usage
 
-Build the domain models and serialize to openCost XML:
+### Building documents
 
 ```python
 from decimal import Decimal
@@ -61,7 +61,7 @@ publication = opencost.PublicationType(
 xml = opencost.to_xml(opencost.Data(publication=[publication]))
 ```
 
-produces
+which produces
 
 ```xml
 <data xmlns="https://opencost.de">
@@ -74,13 +74,34 @@ produces
 </data>
 ```
 
+### Parsing documents
+
+`from_xml` is the exact inverse — children are matched to fields by
+element name, and every value is validated through the same models:
+
+```python
+from pathlib import Path
+
+data = opencost.from_xml(Path("report.xml").read_text())
+
+for publication in data.publication or []:
+    doi = publication.primary_identifier.doi
+    for invoice in publication.cost_data.invoice or []:
+        for amount in invoice.amounts_paid.amount_paid:
+            print(doi, amount.amount, amount.currency, amount.cost_type.value)
+```
+
+Parsed values are fully typed (`Decimal` amounts, enum members, `bool`s),
+unknown elements are rejected, and the round-trip is lossless:
+`from_xml(to_xml(d)) == d`.
+
 ## Validation
 
 The models enforce the schema rules that can be expressed as type
 constraints:
 
-- required lists (`RequiredList` = `Annotated[list[T], Field(min_length=1)]`)
-  reject empty lists — e.g. `PublicationSecondaryIdentifiers(id=[])` fails;
+- required lists (`Annotated[list[T], Field(min_length=1)]`) reject empty
+  lists — e.g. `PublicationSecondaryIdentifiers(id=[])` fails;
 - either/or rules (`EitherFieldMixin`) — e.g. `Dates` needs `invoice` or
   `paid`, `Data` needs `publication` or `contract`;
 - exactly-one rules — `PublicationPrimaryIdentifier` takes a `doi` **or** a
@@ -106,7 +127,7 @@ In this repository the upstream schema is pinned as a git submodule
 (`vendor/opencost`) and used by the test suite — it is a development-only
 dependency, never a runtime one.
 
-## Serialization rules
+## XML (de)serialization
 
 `to_xml` derives the XML shape from the models themselves:
 
@@ -117,6 +138,19 @@ dependency, never a runtime one.
 - field `alias` → element name (e.g. `from_` → `<from>`);
 - enums → their XSD wire values (`journal article`, `gold-oa`);
 - `bool` → `true`/`false`; `Decimal` → two decimal places.
+
+`from_xml` is the exact inverse — the models drive parsing too: children
+are matched to fields by element name, type coercion (Decimal, booleans,
+enum-by-value, patterns) is pydantic's job, and unknown elements are
+rejected via `extra="forbid"`. Documents with the default namespace or an
+`opencost:` prefix parse identically. Round-trip stable:
+`from_xml(to_xml(d)) == d`.
+
+```python
+data = opencost.from_xml(Path("report.xml").read_text())
+for pub in data.publication or []:
+    ...
+```
 
 ## Development
 

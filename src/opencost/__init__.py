@@ -1,11 +1,12 @@
-"""Pydantic models for the openCost metadata schema, plus an XML serializer.
+"""Pydantic models for the openCost metadata schema, with XML (de)serialization.
 
 openCost (https://github.com/opencost-de/opencost) is a metadata schema for
 the financial side of scholarly publishing: article-level cost data
 (``publication``) and contracts / transformative agreements (``contract``).
 
->>> from opencost import Data, PublicationType, to_xml
->>> xml = to_xml(Data(publication=[...]))
+>>> from opencost import Data, PublicationType, from_xml, to_xml
+>>> xml = to_xml(Data(publication=[...]))          # models -> openCost XML
+>>> data = from_xml('<data xmlns="https://opencost.de">…</data>')  # XML -> models
 """
 
 from ._types import NonEmptyString as NonEmptyString
@@ -48,8 +49,9 @@ from ._publication import PublicationCostDataType as PublicationCostDataType
 from ._publication import PartOfContractType as PartOfContractType
 from ._validators import EitherFieldMixin as EitherFieldMixin
 from ._validators import OpenCostModel as OpenCostModel
-from ._xml import NAMESPACE as NAMESPACE
-from ._xml import to_xml as to_xml
+from .xml import NAMESPACE as NAMESPACE
+from .xml import from_xml as from_xml
+from .xml import to_xml as to_xml
 
 __all__ = [
     "NonEmptyString",
@@ -88,9 +90,11 @@ __all__ = [
     "PublicationSecondaryIdentifiers",
     "BibliographicInformation",
     "CoarPublicationType",
+    "PartOfContractType",
+    "PublicationCostDataType",
     "EitherFieldMixin",
     "OpenCostModel",
-    "PartOfContractType",
     "NAMESPACE",
+    "from_xml",
     "to_xml",
 ]

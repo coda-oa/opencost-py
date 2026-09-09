@@ -1,9 +1,10 @@
 from decimal import Decimal
+from typing import Annotated
 
 from pydantic import Field
 
 from ._types import ContractCostType, Currency, DateFormat, NonEmptyString, PublicationCostType
-from ._validators import EitherFieldMixin, OpenCostModel, RequiredList
+from ._validators import EitherFieldMixin, OpenCostModel
 
 
 class PublicationAmountPaidType(OpenCostModel):
@@ -14,7 +15,7 @@ class PublicationAmountPaidType(OpenCostModel):
 
 
 class PublicationAmountsPaid(OpenCostModel):
-    amount_paid: RequiredList[PublicationAmountPaidType]
+    amount_paid: Annotated[list[PublicationAmountPaidType], Field(min_length=1)]
 
 
 class AmountInvoice(OpenCostModel):
@@ -45,7 +46,7 @@ class ContractAmountPaidType(OpenCostModel):
 
 
 class ContractAmountsPaid(OpenCostModel):
-    amount_paid: RequiredList[ContractAmountPaidType]
+    amount_paid: Annotated[list[ContractAmountPaidType], Field(min_length=1)]
 
 
 class ContractInvoiceType(OpenCostModel):
@@ -68,4 +69,4 @@ class ContractInvoiceGroupType(OpenCostModel):
 
 
 class ContractCostDataType(OpenCostModel):
-    invoice_group: RequiredList[ContractInvoiceGroupType]
+    invoice_group: Annotated[list[ContractInvoiceGroupType], Field(min_length=1)]

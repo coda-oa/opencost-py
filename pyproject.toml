@@ -20,7 +20,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 
-dependencies = ["pydantic>=2.8"]
+dependencies = ["pydantic>=2.10"]
 
 [dependency-groups]
 dev = [
