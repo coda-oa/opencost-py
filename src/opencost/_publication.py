@@ -3,13 +3,13 @@ from __future__ import annotations
 from enum import Enum
 from typing import Self
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, conlist, model_validator
 
 from ._contract import ContractPrimaryIdentifier
 from ._institution import InstitutionType
 from ._invoice import PublicationInvoiceType
 from ._types import NonEmptyString
-from ._validators import EitherFieldMixin, RequiredList
+from ._validators import EitherFieldMixin
 
 
 class CoarPublicationType(Enum):
@@ -135,7 +135,7 @@ class PublicationSecondaryIdType(BaseModel):
 
 
 class PublicationSecondaryIdentifiers(BaseModel):
-    id: RequiredList[PublicationSecondaryIdType]
+    id: conlist(PublicationSecondaryIdType, min_length=1)
 
 
 class BibliographicInformation(BaseModel):

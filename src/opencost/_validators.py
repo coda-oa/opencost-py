@@ -1,16 +1,6 @@
-from typing import Annotated, Any, ClassVar, Self
+from typing import Any, ClassVar, Self
 
-from pydantic import AfterValidator, BaseModel, model_validator
-
-
-def _at_least_one_item[T](value: list[T]) -> list[T]:
-    if not value:
-        raise ValueError("must contain at least one item.")
-
-    return value
-
-
-type RequiredList[T] = Annotated[list[T], AfterValidator(_at_least_one_item)]
+from pydantic import BaseModel, model_validator
 
 
 class EitherFieldMixin(BaseModel):

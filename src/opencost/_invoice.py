@@ -1,9 +1,9 @@
 from decimal import Decimal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, conlist
 
 from ._types import ContractCostType, Currency, DateFormat, NonEmptyString, PublicationCostType
-from ._validators import EitherFieldMixin, RequiredList
+from ._validators import EitherFieldMixin
 
 
 class PublicationAmountPaidType(BaseModel):
@@ -14,7 +14,7 @@ class PublicationAmountPaidType(BaseModel):
 
 
 class PublicationAmountsPaid(BaseModel):
-    amount_paid: RequiredList[PublicationAmountPaidType]
+    amount_paid: conlist(PublicationAmountPaidType, min_length=1)
 
 
 class AmountInvoice(BaseModel):
@@ -45,7 +45,7 @@ class ContractAmountPaidType(BaseModel):
 
 
 class ContractAmountsPaid(BaseModel):
-    amount_paid: RequiredList[ContractAmountPaidType]
+    amount_paid: conlist(ContractAmountPaidType, min_length=1)
 
 
 class ContractInvoiceType(BaseModel):
@@ -68,4 +68,4 @@ class ContractInvoiceGroupType(BaseModel):
 
 
 class ContractCostDataType(BaseModel):
-    invoice_group: RequiredList[ContractInvoiceGroupType]
+    invoice_group: conlist(ContractInvoiceGroupType, min_length=1)

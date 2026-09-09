@@ -55,6 +55,14 @@ def test__contract_cost_data__requires_at_least_one_invoice_group() -> None:
         _ = ContractCostDataType(invoice_group=[])
 
 
+def test__required_lists__expose_min_items_in_json_schema() -> None:
+    # conlist makes the "at least one" constraint visible to schema
+    # consumers (e.g. JSON Schema round-trips); a plain AfterValidator
+    # would hide it behind an opaque $ref.
+    schema = PublicationSecondaryIdentifiers.model_json_schema()
+    assert schema["properties"]["id"]["minItems"] == 1
+
+
 def test__publication_primary_identifier__rejects_doi_and_bibliographic_information() -> None:
     from opencost import BibliographicInformation
 

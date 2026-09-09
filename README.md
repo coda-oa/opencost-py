@@ -79,7 +79,7 @@ produces
 The models enforce the schema rules that can be expressed as type
 constraints:
 
-- required lists (`RequiredList`) reject empty lists — e.g.
+- required lists (`conlist(..., min_length=1)`) reject empty lists — e.g.
   `PublicationSecondaryIdentifiers(id=[])` fails;
 - either/or rules (`EitherFieldMixin`) — e.g. `Dates` needs `invoice` or
   `paid`, `Data` needs `publication` or `contract`;

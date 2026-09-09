@@ -1,11 +1,10 @@
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, conlist
 
 from ._institution import InstitutionType
 from ._invoice import ContractCostDataType
 from ._types import DateFormat, NonEmptyString
-from ._validators import RequiredList
 
 
 class ContractPrimaryIdentifierType(Enum):
@@ -29,7 +28,7 @@ class ContractSecondaryIdType(BaseModel):
 
 
 class ContractSecondaryIdentifiersType(BaseModel):
-    id: RequiredList[ContractSecondaryIdType]
+    id: conlist(ContractSecondaryIdType, min_length=1)
 
 
 class ParticipationType(BaseModel):
