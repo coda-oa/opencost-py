@@ -159,3 +159,8 @@ git submodule update --init   # pins upstream schema for the validation tests
 uv sync
 uv run pytest
 ```
+
+## License
+
+GPL-3.0-or-later.
+

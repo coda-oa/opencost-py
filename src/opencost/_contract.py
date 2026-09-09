@@ -1,3 +1,6 @@
+# Field descriptions and notes are taken from the openCost documentation
+# (doc/README.md of https://github.com/opencost-de/opencost), GPL-3.0-or-later,
+# vendored as submodule vendor/opencost @ af6d257.
 from enum import Enum
 from typing import Annotated
 
@@ -10,38 +13,91 @@ from ._validators import OpenCostModel
 
 
 class ContractPrimaryIdentifierType(Enum):
+    """Contract primary identifier scheme (§5.1).
+
+    Currently only ESAC is accepted.
+    """
+
     ESAC = "ESAC"
 
 
 class ContractPrimaryIdentifier(OpenCostModel):
-    value: NonEmptyString
-    type: ContractPrimaryIdentifierType
+    """Persistent, global identifier for the contract (§5).
+
+    Currently only an ESAC ID is accepted
+    (https://esac-initiative.org/about/transformative-agreements/agreement-registry/).
+    """
+
+    value: NonEmptyString = Field(description="ESAC agreement id of the contract.")
+    type: ContractPrimaryIdentifierType = Field(
+        description="Identifier scheme; currently only `ESAC`."
+    )
 
 
 class ContractSecondaryIdTypeEnum(Enum):
+    """Contract secondary identifier scheme (§6.1.1)."""
+
     oai = "oai"
     ezb = "ezb"
     local = "local"
 
 
 class ContractSecondaryIdType(OpenCostModel):
-    value: NonEmptyString
-    type: ContractSecondaryIdTypeEnum
+    """Secondary identifier for the contract (§6.1)."""
+
+    value: NonEmptyString = Field(description="Identifier value.")
+    type: ContractSecondaryIdTypeEnum = Field(description="Identifier scheme of `value`.")
 
 
 class ContractSecondaryIdentifiersType(OpenCostModel):
-    id: Annotated[list[ContractSecondaryIdType], Field(min_length=1)]
+    """Contains additional, optional identifiers for the contract (§6)."""
+
+    id: Annotated[
+        list[ContractSecondaryIdType],
+        Field(min_length=1, description="Additional (persistent) identifiers."),
+    ]
 
 
 class ParticipationType(OpenCostModel):
-    to: DateFormat
-    from_: DateFormat = Field(..., alias="from")
+    """Contains information on the dates an institution joined and left a
+    contract (§4)."""
+
+    to: DateFormat = Field(
+        description="The date when the institution left the contract. Not to "
+        "be confused with the end date of the agreement itself, which may be "
+        "later."
+    )
+    from_: DateFormat = Field(
+        ...,
+        alias="from",
+        description="The date when the institution joined the contract. Not "
+        "to be confused with the start date of the agreement itself, which "
+        "may be earlier.",
+    )
 
 
 class ContractType(OpenCostModel):
-    contract_name: NonEmptyString
-    institution: InstitutionType
-    participation: ParticipationType
-    primary_identifier: ContractPrimaryIdentifier
-    secondary_identifiers: ContractSecondaryIdentifiersType | None = None
-    cost_data: ContractCostDataType
+    """Top-level element, corresponds to a contract for which costs are to be
+    recorded (§1).
+
+    Examples of such contracts are transformative agreements and memberships.
+    """
+
+    contract_name: NonEmptyString = Field(description="A human-readable label for the contract.")
+    institution: InstitutionType = Field(
+        description="Contains information to identify the institution taking part in the contract."
+    )
+    participation: ParticipationType = Field(
+        description="The dates the institution joined and left the contract."
+    )
+    primary_identifier: ContractPrimaryIdentifier = Field(
+        description="Persistent, global identifier for the contract; "
+        "currently only an ESAC ID is accepted."
+    )
+    secondary_identifiers: ContractSecondaryIdentifiersType | None = Field(
+        default=None,
+        description="Additional, optional identifiers for the contract.",
+    )
+    cost_data: ContractCostDataType = Field(
+        description="Aggregates payments related to this contract."
+    )

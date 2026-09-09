@@ -25,7 +25,7 @@ from opencost import (
     PublicationCostDataType,
     PublicationInvoiceType,
     PublicationPrimaryIdentifier,
-    PublicationType,
+    PublicationType, InstitutionIdType, CoarPublicationType, PublicationCostType,
 )
 
 
@@ -34,25 +34,21 @@ def build_data() -> Data:
         publication=[
             PublicationType(
                 primary_identifier=PublicationPrimaryIdentifier(doi="10.1234/abcd"),
-                institution=InstitutionType(
-                    id=[InstitutionId(type="ror", value="010zzcb52")]
-                ),
-                publication_type="journal article",
+                institution=InstitutionType(id=[InstitutionId(type=InstitutionIdType.ror, value="010zzcb52")]),
+                publication_type=CoarPublicationType.journal_article,
                 external_costsplitting=True,
                 cost_data=PublicationCostDataType(
                     invoice=[
                         PublicationInvoiceType(
                             invoice_number="INV-1",
                             dates=Dates(invoice="2026-05-01", paid="2026-05-20"),
-                            amount_invoice=AmountInvoice(
-                                amount=Decimal("1980.00"), currency="EUR"
-                            ),
+                            amount_invoice=AmountInvoice(amount=Decimal("1980.00"), currency="EUR"),
                             amounts_paid=PublicationAmountsPaid(
                                 amount_paid=[
                                     PublicationAmountPaidType(
                                         amount=Decimal("1650.00"),
                                         currency="EUR",
-                                        cost_type="gold-oa",
+                                        cost_type=PublicationCostType.gold_oa,
                                         vat=Decimal("342.00"),
                                     )
                                 ]
