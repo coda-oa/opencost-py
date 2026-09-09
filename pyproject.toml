@@ -25,6 +25,7 @@ dependencies = ["pydantic>=2.8"]
 [dependency-groups]
 dev = [
     "lxml>=5.0",
+    "mypy>=1.14",
     "pytest>=8.0",
     "ruff>=0.9",
 ]
@@ -45,3 +46,8 @@ select = ["E", "F", "I", "UP", "B", "RUF"]
 
 [tool.ruff.lint.per-file-ignores]
 "src/opencost/__init__.py" = ["I001", "RUF022"]
+
+[tool.mypy]
+strict = true
+mypy_path = "src"
+packages = ["opencost"]

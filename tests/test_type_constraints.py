@@ -56,11 +56,15 @@ def test__contract_cost_data__requires_at_least_one_invoice_group() -> None:
 
 
 def test__required_lists__expose_min_items_in_json_schema() -> None:
-    # conlist makes the "at least one" constraint visible to schema
-    # consumers (e.g. JSON Schema round-trips); a plain AfterValidator
-    # would hide it behind an opaque $ref.
+    # The Field(min_length=1) constraint must be visible to schema
+    # consumers, inline or through the alias's $def (standard JSON Schema
+    # $ref resolution). The original custom AfterValidator produced a $def
+    # with no constraint at all.
     schema = PublicationSecondaryIdentifiers.model_json_schema()
-    assert schema["properties"]["id"]["minItems"] == 1
+    prop = schema["properties"]["id"]
+    if "$ref" in prop:
+        prop = schema["$defs"][prop["$ref"].split("/")[-1]]
+    assert prop["minItems"] == 1
 
 
 def test__publication_primary_identifier__rejects_doi_and_bibliographic_information() -> None:

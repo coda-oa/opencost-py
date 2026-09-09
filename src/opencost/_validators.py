@@ -1,6 +1,12 @@
-from typing import Any, ClassVar, Self
+from typing import Annotated, Any, ClassVar, Self
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, Field, model_validator
+
+# pydantic's declarative "non-empty list". conlist() would do the same at
+# runtime but is a function call in annotation position, which static
+# checkers reject; Annotated + Field is the documented type-checker-safe
+# spelling of the same Len constraint.
+type RequiredList[T] = Annotated[list[T], Field(min_length=1)]
 
 
 class EitherFieldMixin(BaseModel):

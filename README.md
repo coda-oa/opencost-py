@@ -79,8 +79,8 @@ produces
 The models enforce the schema rules that can be expressed as type
 constraints:
 
-- required lists (`conlist(..., min_length=1)`) reject empty lists — e.g.
-  `PublicationSecondaryIdentifiers(id=[])` fails;
+- required lists (`RequiredList` = `Annotated[list[T], Field(min_length=1)]`)
+  reject empty lists — e.g. `PublicationSecondaryIdentifiers(id=[])` fails;
 - either/or rules (`EitherFieldMixin`) — e.g. `Dates` needs `invoice` or
   `paid`, `Data` needs `publication` or `contract`;
 - exactly-one rules — `PublicationPrimaryIdentifier` takes a `doi` **or** a
