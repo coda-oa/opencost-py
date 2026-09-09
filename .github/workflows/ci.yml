@@ -35,8 +35,7 @@ jobs:
       - name: ruff check
         run: uv run ruff check .
 
-      - name: pytest
-        run: uv run pytest -q
-
-      - name: mypy (strict)
-        run: uv run mypy
+      - name: test + type check via nox (pytest; mypy on src; mypy, pyright, pyrefly on tests)
+        # nox builds isolated uv venvs per session; wheels come from the
+        # uv cache warmed by the sync above
+        run: uv run --frozen nox

@@ -24,11 +24,17 @@ classifiers = [
 dependencies = ["pydantic>=2.10"]
 
 [dependency-groups]
-dev = [
+# runtime requirements of the test suite; consumed by both `dev` and the
+# nox test/checker sessions (see noxfile.py)
+test = [
     "lxml>=5.0",
     "lxml-stubs>=0.5.1",
-    "mypy>=1.14",
     "pytest>=8.0",
+]
+dev = [
+    { include-group = "test" },
+    "mypy>=1.14",
+    "nox>=2026.8.17",
     "ruff>=0.9",
 ]
 
@@ -53,3 +59,15 @@ select = ["E", "F", "I", "UP", "B", "RUF"]
 strict = true
 mypy_path = "src"
 packages = ["opencost"]
+
+[tool.pyright]
+include = ["src", "tests"]
+extraPaths = ["tests"]
+typeCheckingMode = "strict"
+
+[tool.pyrefly]
+# Presence of this table switches Pyrefly off its toothless `basic` preset.
+# One checker (mypy) polices src/; the multi-checker sessions focus on tests/,
+# i.e. the public API as users call it.
+project-includes = ["tests"]
+search_path = ["tests"]

@@ -130,7 +130,7 @@ def test__official_example_documents__validate_against_pinned_schema(
     are designed to serialize.
     """
     assert example_docs, "no example documents found in submodule"
-    invalid = []
+    invalid: list[str] = []
     for path in example_docs:
         try:
             schema.assertValid(etree.parse(str(path)))

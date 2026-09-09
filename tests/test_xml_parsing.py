@@ -100,9 +100,8 @@ def test__alias_from__parses_back_to_python_name() -> None:
     contract = make_contract()
     parsed = from_xml(to_xml(Data(contract=[contract])))
     assert parsed.contract is not None
-    assert parsed.contract[0].participation == ParticipationType(
-        from_="2024-01-01", to="2024-12-31"
-    )  # type: ignore[call-arg]
+    expected = ParticipationType.model_validate({"from": "2024-01-01", "to": "2024-12-31"})
+    assert parsed.contract[0].participation == expected
 
 
 def test__unknown_element__is_rejected() -> None:
