@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the openCost schema submodule drives the XSD validation tests;
+          # without it those tests skip silently
+          submodules: true
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --frozen --group dev
+
+      - name: Guard schema submodule present
+        # the XSD validation tests skip when vendor/opencost is absent;
+        # in CI that would be a silent coverage loss -> fail loudly
+        run: test -f vendor/opencost/doc/opencost.xsd
+
+      - name: ruff check
+        run: uv run ruff check .
+
+      - name: pytest
+        run: uv run pytest -q
+
+      - name: mypy (strict)
+        run: uv run mypy
