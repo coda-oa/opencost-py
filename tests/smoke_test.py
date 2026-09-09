@@ -16,16 +16,19 @@ from decimal import Decimal
 import opencost
 from opencost import (
     AmountInvoice,
+    CoarPublicationType,
     Data,
     Dates,
     InstitutionId,
+    InstitutionIdType,
     InstitutionType,
     PublicationAmountPaidType,
     PublicationAmountsPaid,
     PublicationCostDataType,
+    PublicationCostType,
     PublicationInvoiceType,
     PublicationPrimaryIdentifier,
-    PublicationType, InstitutionIdType, CoarPublicationType, PublicationCostType,
+    PublicationType,
 )
 
 
@@ -34,7 +37,9 @@ def build_data() -> Data:
         publication=[
             PublicationType(
                 primary_identifier=PublicationPrimaryIdentifier(doi="10.1234/abcd"),
-                institution=InstitutionType(id=[InstitutionId(type=InstitutionIdType.ror, value="010zzcb52")]),
+                institution=InstitutionType(
+                    id=[InstitutionId(type=InstitutionIdType.ror, value="010zzcb52")]
+                ),
                 publication_type=CoarPublicationType.journal_article,
                 external_costsplitting=True,
                 cost_data=PublicationCostDataType(
