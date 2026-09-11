@@ -1,6 +1,6 @@
 # Field descriptions and notes are taken from the openCost documentation
 # (doc/README.md of https://github.com/opencost-de/opencost), GPL-3.0-or-later,
-# vendored as submodule vendor/opencost @ af6d257.
+# vendored as submodule vendor/opencost
 from decimal import Decimal
 from typing import Annotated
 

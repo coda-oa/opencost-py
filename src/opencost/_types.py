@@ -2,7 +2,7 @@
 
 The cost-type definitions are taken from the openCost cost-types glossary
 (`Cost_types_glossary.md` of https://github.com/opencost-de/opencost),
-GPL-3.0-or-later, vendored as submodule vendor/opencost @ af6d257.
+GPL-3.0-or-later, vendored as submodule vendor/opencost
 """
 
 from enum import Enum

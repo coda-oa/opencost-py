@@ -1,6 +1,6 @@
 # Field descriptions and notes are taken from the openCost documentation
 # (doc/README.md of https://github.com/opencost-de/opencost), GPL-3.0-or-later,
-# vendored as submodule vendor/opencost @ af6d257.
+# vendored as submodule vendor/opencost
 from enum import Enum
 from typing import Annotated
 
@@ -15,22 +15,24 @@ from ._validators import OpenCostModel
 class ContractPrimaryIdentifierType(Enum):
     """Contract primary identifier scheme (§5.1).
 
-    Currently only ESAC is accepted.
+    `ESAC` or `opencostid` is accepted.
     """
 
     ESAC = "ESAC"
+    opencostid = "opencostid"
 
 
 class ContractPrimaryIdentifier(OpenCostModel):
     """Persistent, global identifier for the contract (§5).
 
-    Currently only an ESAC ID is accepted
-    (https://esac-initiative.org/about/transformative-agreements/agreement-registry/).
+    Currently an `ESAC` ID
+    (https://esac-initiative.org/about/transformative-agreements/agreement-registry/)
+    or an `opencostid` (a self-issued id for the contract).
     """
 
-    value: NonEmptyString = Field(description="ESAC agreement id of the contract.")
+    value: NonEmptyString = Field(description="Identifier value of the contract.")
     type: ContractPrimaryIdentifierType = Field(
-        description="Identifier scheme; currently only `ESAC`."
+        description="Identifier scheme; `ESAC` or `opencostid`."
     )
 
 
@@ -40,6 +42,8 @@ class ContractSecondaryIdTypeEnum(Enum):
     oai = "oai"
     ezb = "ezb"
     local = "local"
+    ESAC = "ESAC"
+    opencostid = "opencostid"
 
 
 class ContractSecondaryIdType(OpenCostModel):
@@ -92,7 +96,7 @@ class ContractType(OpenCostModel):
     )
     primary_identifier: ContractPrimaryIdentifier = Field(
         description="Persistent, global identifier for the contract; "
-        "currently only an ESAC ID is accepted."
+        "currently `ESAC` or `opencostid` is accepted."
     )
     secondary_identifiers: ContractSecondaryIdentifiersType | None = Field(
         default=None,
