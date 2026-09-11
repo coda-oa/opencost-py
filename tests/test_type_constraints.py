@@ -126,6 +126,57 @@ def test__enum_fields__accept_wire_values() -> None:
     assert identifier.id[0].type.value == "pmid"
 
 
+def test__coar_publication_type__accepts_purls_both_schemes() -> None:
+    from opencost import CoarPublicationType
+
+    assert CoarPublicationType("journal article") is CoarPublicationType.journal_article
+    assert CoarPublicationType("https://purl.org/coar/resource_type/c_6501") is (
+        CoarPublicationType.journal_article_purl
+    )
+    assert CoarPublicationType("http://purl.org/coar/resource_type/c_6501") is (
+        CoarPublicationType.journal_article_purl_http
+    )
+
+    with pytest.raises(ValueError):
+        CoarPublicationType("https://purl.org/coar/resource_type/c_deprecated")
+
+
+def test__publication_purl__round_trips_scheme_verbatim() -> None:
+    # XSD fidelity: http PURLs are a distinct member and must never be
+    # normalized to https on the way out.
+    from opencost import (
+        CoarPublicationType,
+        ContractPrimaryIdentifier,
+        ContractPrimaryIdentifierType,
+        InstitutionId,
+        InstitutionIdType,
+        PartOfContractType,
+        PublicationType,
+        from_xml,
+        to_xml,
+    )
+
+    publication = PublicationType(
+        primary_identifier=PublicationPrimaryIdentifier(doi="10.1234/abcd"),
+        institution=InstitutionType(
+            id=[InstitutionId(type=InstitutionIdType.ror, value="010zzcb52")]
+        ),
+        publication_type=CoarPublicationType.journal_article_purl_http,
+        cost_data=PublicationCostDataType(
+            part_of_contract=PartOfContractType(
+                primary_identifier=ContractPrimaryIdentifier(
+                    type=ContractPrimaryIdentifierType.opencostid, value="oc-x-1"
+                )
+            )
+        ),
+    )
+    data = Data(publication=[publication])
+    xml = to_xml(data)
+    purl = "http://purl.org/coar/resource_type/c_6501"
+    assert f"<publication_type>{purl}</publication_type>" in xml
+    assert from_xml(xml) == data
+
+
 def test__contract_secondary_id__accepts_new_wire_values() -> None:
     from opencost import ContractSecondaryIdType
 

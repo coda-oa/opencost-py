@@ -8,124 +8,12 @@ from typing import Annotated, Self
 
 from pydantic import Field, model_validator
 
+from ._coar import CoarPublicationType
 from ._contract import ContractPrimaryIdentifier
 from ._institution import InstitutionType
 from ._invoice import PublicationInvoiceType
 from ._types import NonEmptyString
 from ._validators import EitherFieldMixin, OpenCostModel
-
-
-class CoarPublicationType(Enum):
-    """Publication type as the reporting institution categorizes it (§5).
-
-    Uses the COAR controlled vocabulary v3.2 English labels. The openCost
-    schema also accepts the corresponding COAR PURLs; PURLs are recommended
-    as language-independent persistent identifiers, but the English labels
-    remain fully valid.
-    """
-
-    cartographic_material = "cartographic material"
-    map = "map"
-    dataset = "dataset"
-    aggregated_data = "aggregated data"
-    clinical_trial_data = "clinical trial data"
-    compiled_data = "compiled data"
-    encoded_data = "encoded data"
-    experimental_data = "experimental data"
-    genomic_data = "genomic data"
-    geospatial_data = "geospatial data"
-    laboratory_notebook = "laboratory notebook"
-    measurement_and_test_data = "measurement and test data"
-    observational_data = "observational data"
-    recorded_data = "recorded data"
-    simulation_data = "simulation data"
-    survey_data = "survey data"
-    design = "design"
-    industrial_design = "industrial design"
-    layout_design = "layout design"
-    image = "image"
-    moving_image = "moving image"
-    video = "video"
-    still_image = "still image"
-    interactive_resource = "interactive resource"
-    website = "website"
-    learning_object = "learning object"
-    other = "other"
-    patent = "patent"
-    pct_application = "PCT application"
-    design_patent = "design patent"
-    plant_patent = "plant patent"
-    plant_variety_protection = "plant variety protection"
-    software_patent = "software patent"
-    utility_model = "utility model"
-    software = "software"
-    research_software = "research software"
-    source_code = "source code"
-    sound = "sound"
-    musical_composition = "musical composition"
-    text = "text"
-    annotation = "annotation"
-    bibliography = "bibliography"
-    blog_post = "blog post"
-    book = "book"
-    book_part = "book part"
-    conference_output = "conference output"
-    conference_paper_not_in_proceedings = "conference paper not in proceedings"
-    conference_poster_not_in_proceedings = "conference poster not in proceedings"
-    conference_presentation = "conference presentation"
-    conference_proceedings = "conference proceedings"
-    conference_paper = "conference paper"
-    conference_poster = "conference poster"
-    journal = "journal"
-    editorial = "editorial"
-    journal_article = "journal article"
-    corrigendum = "corrigendum"
-    data_paper = "data paper"
-    research_article = "research article"
-    review_article = "review article"
-    software_paper = "software paper"
-    letter_to_the_editor = "letter to the editor"
-    lecture = "lecture"
-    letter = "letter"
-    magazine = "magazine"
-    manuscript = "manuscript"
-    musical_notation = "musical notation"
-    newspaper = "newspaper"
-    newspaper_article = "newspaper article"
-    other_periodical = "other periodical"
-    preprint = "preprint"
-    report = "report"
-    clinical_study = "clinical study"
-    data_management_plan = "data management plan"
-    memorandum = "memorandum"
-    policy_report = "policy report"
-    project_deliverable = "project deliverable"
-    research_protocol = "research protocol"
-    research_report = "research report"
-    technical_report = "technical report"
-    research_proposal = "research proposal"
-    review = "review"
-    book_review = "book review"
-    commentary = "commentary"
-    peer_review = "peer review"
-    technical_documentation = "technical documentation"
-    thesis = "thesis"
-    bachelor_thesis = "bachelor thesis"
-    doctoral_thesis = "doctoral thesis"
-    master_thesis = "master thesis"
-    transcription = "transcription"
-    working_paper = "working paper"
-    trademark = "trademark"
-    workflow = "workflow"
-    archival_collection = "archival collection"
-    artistic_work = "artistic work"
-    collection = "collection"
-    court_documents = "court documents"
-    knowledge_organization_system = "knowledge organization system"
-    knowledge_synthesis_protocol = "knowledge synthesis protocol"
-    magazine_article = "magazine article"
-    physical_sample = "physical sample"
-    research_instrument = "research instrument"
 
 
 class PublicationSecondaryIdTypeEnum(Enum):
@@ -259,8 +147,9 @@ class PublicationType(OpenCostModel):
     )
     publication_type: CoarPublicationType = Field(
         description="Type of the publication as the reporting institution "
-        "categorizes it. COAR controlled vocabulary (v3.2) English label; "
-        "COAR PURLs are recommended in the schema but encoded here as labels."
+        "categorizes it. COAR controlled vocabulary (v3.2) English label or "
+        "the corresponding COAR PURL; PURLs are recommended as "
+        "language-independent persistent identifiers."
     )
     external_costsplitting: bool | None = Field(
         default=None,

@@ -1,3 +1,5 @@
+import sys
+
 import nox
 
 nox.options.default_venv_backend = "uv"
@@ -32,3 +34,9 @@ def typecheck_api(session: nox.Session, checker: str) -> None:
         session.run("pyright", "tests/")
     else:
         session.run("pyrefly", "check", "tests/")
+
+
+@nox.session(venv_backend="none")
+def vocab_sync(session: nox.Session) -> None:
+    """Fail if generated vocabulary modules drift from the pinned upstream XSD."""
+    session.run(sys.executable, "scripts/gen_coar.py", "--check", external=True)

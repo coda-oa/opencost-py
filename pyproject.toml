@@ -1,6 +1,6 @@
 [project]
 name = "opencost"
-version = "0.1.2"
+version = "0.2.0"
 description = "Pydantic models for the openCost publication-cost metadata schema, with XML de-/serialization"
 readme = "README.md"
 requires-python = ">=3.12"

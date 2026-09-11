@@ -44,7 +44,7 @@ from ._publication import PublicationSecondaryIdType as PublicationSecondaryIdTy
 from ._publication import PublicationSecondaryIdTypeEnum as PublicationSecondaryIdTypeEnum
 from ._publication import PublicationSecondaryIdentifiers as PublicationSecondaryIdentifiers
 from ._publication import BibliographicInformation as BibliographicInformation
-from ._publication import CoarPublicationType as CoarPublicationType
+from ._coar import CoarPublicationType as CoarPublicationType
 from ._publication import PublicationCostDataType as PublicationCostDataType
 from ._publication import PartOfContractType as PartOfContractType
 from ._validators import EitherFieldMixin as EitherFieldMixin
