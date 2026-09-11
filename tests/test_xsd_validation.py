@@ -22,6 +22,7 @@ from opencost import (
     PublicationCostType,
     PublicationInvoiceType,
     PublicationPrimaryIdentifier,
+    from_xml,
     to_xml,
 )
 from test_xml_generation import make_contract, make_publication
@@ -137,3 +138,18 @@ def test__official_example_documents__validate_against_pinned_schema(
         except etree.XMLSyntaxError:
             invalid.append(path.name)
     assert not invalid, f"examples invalid against pinned schema: {invalid}"
+
+
+def test__official_example_documents__parse_and_round_trip(example_docs: list[Path]) -> None:
+    """Every upstream example must ingest through the models losslessly.
+
+    XSD validity alone does not prove the models can *represent* the
+    documents: this pins that all enum values, aliases, and structures used
+    by upstream (e.g. the ``opencostid``/``ESAC`` contract identifier types
+    in contract_deal_opencostid.xml) have model counterparts, and that
+    re-serialization is a fixed point.
+    """
+    assert example_docs, "no example documents found in submodule"
+    for path in example_docs:
+        data = from_xml(path.read_text(encoding="utf-8-sig"))
+        assert from_xml(to_xml(data)) == data, path.name

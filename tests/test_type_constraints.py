@@ -124,3 +124,10 @@ def test__enum_fields__accept_wire_values() -> None:
     # CoarPublicationType / cost types accept their XSD strings directly.
     identifier = PublicationSecondaryIdentifiers(id=[{"type": "pmid", "value": "123"}])  # type: ignore[list-item]
     assert identifier.id[0].type.value == "pmid"
+
+
+def test__contract_secondary_id__accepts_new_wire_values() -> None:
+    from opencost import ContractSecondaryIdType
+
+    for wire in ("ESAC", "opencostid"):
+        assert ContractSecondaryIdType(type=wire, value="x").type.value == wire  # type: ignore[arg-type]
