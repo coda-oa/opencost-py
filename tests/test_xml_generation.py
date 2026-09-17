@@ -56,7 +56,10 @@ def find(root: ET.Element, path: str) -> ET.Element:
 
 def make_institution() -> InstitutionType:
     return InstitutionType(
-        id=[InstitutionId(type=InstitutionIdType.ror, value="010zzcb52")],
+        id=[
+            InstitutionId(type=InstitutionIdType.ror, value="010zzcb52"),
+            InstitutionId(type=InstitutionIdType.ringgold, value="1000795"),
+        ],
         name=[InstitutionName(type=InstitutionNameType.full, value="TU Braunschweig")],
     )
 

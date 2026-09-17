@@ -14,7 +14,7 @@ class InstitutionIdType(Enum):
 
     ror = "ror"
     isni = "isni"
-    ringold = "ringold"
+    ringgold = "ringgold"
 
 
 class InstitutionId(OpenCostModel):
