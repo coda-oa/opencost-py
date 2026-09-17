@@ -97,20 +97,45 @@ unknown elements are rejected, and the round-trip is lossless:
 
 ## Validation
 
-The models enforce the schema rules that can be expressed as type
-constraints:
+The rules the models enforce split in two: restrictions the upstream XSD
+mandates, which the models mirror as type constraints, and two date checks
+this package adds on top.
 
-- required lists (`Annotated[list[T], Field(min_length=1)]`) reject empty
-  lists — e.g. `PublicationSecondaryIdentifiers(id=[])` fails;
-- either/or rules (`EitherFieldMixin`) — e.g. `Dates` needs `invoice` or
-  `paid`, `Data` needs `publication` or `contract`;
-- exactly-one rules — `PublicationPrimaryIdentifier` takes a `doi` **or** a
-  `bibliographic_information` block, never both or neither;
-- patterns — `Currency` is a three-letter ISO 4217 code, `DateFormat` is
-  `YYYY`, `YYYY-MM` or `YYYY-MM-DD`;
-- strict model config — unknown/misspelled fields are rejected
-  (`extra="forbid"`), and aliased fields accept both the Python name and
-  the wire alias (`from_` or `from`).
+### Mandated by the schema
+
+- required lists — `Annotated[list[T], Field(min_length=1)]` rejects an empty
+  list wherever the XSD declares `minOccurs="1" maxOccurs="unbounded"`, so
+  `PublicationSecondaryIdentifiers(id=[])` fails;
+- either/or — `EitherFieldMixin` stands in for an `xs:choice`: `Dates` needs
+  `invoice` or `paid`, `Data` needs `publication` or `contract`,
+  `InstitutionType` needs `name` or `id`;
+- exactly-one — `PublicationPrimaryIdentifier` takes a `doi` **or** a
+  `bibliographic_information` block, never both or neither, matching an
+  `xs:choice` whose members are both required;
+- patterns — `Currency` is three uppercase letters and `DateFormat` is
+  `YYYY`, `YYYY-MM` or `YYYY-MM-DD`, both spelled as `xs:pattern`; text fields
+  built on `NonEmptyString` reject `""` via `xs:minLength`;
+- closed content — unknown or misspelled fields are rejected
+  (`extra="forbid"`), since the XSD declares no other elements.
+
+### Beyond the schema
+
+openCost constrains dates by pattern only, and a pattern cannot say whether a
+day exists. Two checks go further:
+
+- calendar correctness — the shape must also be a real day, so `2020-06-31`
+  fails even though the upstream XSD pattern accepts it; an impossible `to`
+  date did reach the upstream example documents (opencost-de/opencost#109);
+- ordered date ranges — `participation` and `invoices_period` reject a `from`
+  that is clearly after `to`. Each value counts as the year/month/day span it
+  covers, so mixed precision (`from="2024"`, `to="2024-12"`) stays valid.
+
+Precision itself is left alone: `2024-12` is never expanded into a full date.
+Everything else the models reject is also rejected by the XSD.
+
+Documents that are schema-valid but calendar-invalid therefore no longer parse;
+`from_xml` reports the element path, e.g.
+`contract.0.participation.to`.
 
 ### Validating generated documents
 

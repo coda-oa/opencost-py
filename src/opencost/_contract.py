@@ -2,14 +2,14 @@
 # (doc/README.md of https://github.com/opencost-de/opencost), GPL-3.0-or-later,
 # vendored as submodule vendor/opencost
 from enum import Enum
-from typing import Annotated
+from typing import Annotated, Self
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from ._institution import InstitutionType
 from ._invoice import ContractCostDataType
 from ._types import DateFormat, NonEmptyString
-from ._validators import OpenCostModel
+from ._validators import OpenCostModel, _check_date_range
 
 
 class ContractPrimaryIdentifierType(Enum):
@@ -78,6 +78,11 @@ class ParticipationType(OpenCostModel):
         "to be confused with the start date of the agreement itself, which "
         "may be earlier.",
     )
+
+    @model_validator(mode="after")
+    def _participation_period_is_ordered(self) -> Self:
+        _check_date_range(self.from_, self.to)
+        return self
 
 
 class ContractType(OpenCostModel):

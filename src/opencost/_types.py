@@ -5,16 +5,47 @@ The cost-type definitions are taken from the openCost cost-types glossary
 GPL-3.0-or-later, vendored as submodule vendor/opencost
 """
 
+from datetime import date
 from enum import Enum
 from typing import Annotated
 
-from pydantic import StringConstraints
+from pydantic import AfterValidator, StringConstraints
 
-# pydantic matches `pattern` unanchored (re.search); the XSD patterns are
+# pydantic matches `pattern` as an unanchored regex search; the XSD patterns are
 # implicitly anchored, so they must be spelled out here.
 NonEmptyString = Annotated[str, StringConstraints(min_length=1)]
 Currency = Annotated[str, StringConstraints(pattern=r"^[A-Z]{3}$")]
-DateFormat = Annotated[str, StringConstraints(pattern=r"^[0-9]{4}(-[0-9]{2}){0,2}$")]
+
+
+def _calendar_date(value: str) -> str:
+    """Reject shape-valid but calendar-impossible dates such as `2020-06-31`.
+
+    openCost constrains `date_format` by pattern only, so June the 31st is
+    schema-valid upstream -- it shipped in the upstream examples themselves
+    (opencost-de/opencost#109). `datetime.date` supplies the calendar check a
+    pattern cannot express: month/day ranges and leap years.
+
+    `pattern` owns the shape and runs first, so each component is already ASCII
+    digits of width 4 / 2 / 2 -- padded cases included, because pydantic-core
+    matches `pattern` with a Rust regex whose `$` does not match before a
+    trailing newline. The shape is deliberately not re-checked here; loosening
+    `pattern` would silently widen what `int()` accepts (unicode digits, padded
+    components, ignored trailing components), so change the two together.
+    """
+    parts = value.split("-")
+    year = int(parts[0])
+    month = int(parts[1]) if len(parts) > 1 else 1
+    day = int(parts[2]) if len(parts) > 2 else 1
+    date(year, month, day)
+    return value
+
+
+# The pattern reports shape errors; `_calendar_date` reports calendar errors.
+DateFormat = Annotated[
+    str,
+    StringConstraints(pattern=r"^[0-9]{4}(-[0-9]{2}){0,2}$"),
+    AfterValidator(_calendar_date),
+]
 
 
 class ContractCostType(Enum):
