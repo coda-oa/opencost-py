@@ -127,6 +127,15 @@ In this repository the upstream schema is pinned as a git submodule
 (`vendor/opencost`) and used by the test suite — it is a development-only
 dependency, never a runtime one.
 
+### JSON Schema
+
+For validating openCost records in JSON, a JSON Schema can
+be generated with the supplied development script:
+
+```bash
+uv run python scripts/gen_jsonschema.py > opencost.schema.json
+```
+
 ## XML (de)serialization
 
 `to_xml` derives the XML shape from the models themselves:
