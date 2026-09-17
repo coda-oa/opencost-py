@@ -37,11 +37,13 @@ def read_concepts() -> list[tuple[str, str, str]]:
     """
     root = ET.parse(XSD).getroot()
     (simple_type,) = (
-        s for s in root.findall(f"{{{XS}}}simpleType") if s.get("name") == "coar_publication_type"
+        s
+        for s in root.findall(f"{{{XS}}}simpleType")
+        if s.get("name") == "coar_publication_type_vocab"
     )
     values = [e.get("value") for e in simple_type.iter(f"{{{XS}}}enumeration")]
     if len(values) % 3:
-        sys.exit(f"unexpected coar_publication_type size: {len(values)}")
+        sys.exit(f"unexpected coar_publication_type_vocab size: {len(values)}")
     concepts = []
     for i in range(0, len(values), 3):
         http_purl, https_purl, label = values[i : i + 3]
@@ -60,7 +62,7 @@ def render(concepts: list[tuple[str, str, str]], pin: str) -> str:
         "",
         "GENERATED FILE - do not edit.",
         "Source: vendor/opencost/doc/opencost_types.xsd, simpleType",
-        f"``coar_publication_type``, submodule pin {pin}.",
+        f"``coar_publication_type_vocab``, submodule pin {pin}.",
         "Regenerate with: uv run python scripts/gen_coar.py",
         '"""',
         "",
@@ -109,9 +111,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Regenerate src/opencost/_coar.py from the pinned openCost XSD."
     )
-    parser.add_argument(
-        "--check", action="store_true", help="fail on drift without writing"
-    )
+    parser.add_argument("--check", action="store_true", help="fail on drift without writing")
     args = parser.parse_args()
     # Check the XSD first: without a checked-out submodule, git commands
     # here would silently resolve to the SUPERPROJECT's HEAD.

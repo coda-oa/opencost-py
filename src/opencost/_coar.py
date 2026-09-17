@@ -2,7 +2,7 @@
 
 GENERATED FILE - do not edit.
 Source: vendor/opencost/doc/opencost_types.xsd, simpleType
-``coar_publication_type``, submodule pin 785400ef7a56b2fc1a48e7b9656c67d7936cde82.
+``coar_publication_type_vocab``, submodule pin f6475895e449256123d2987a9933ccf7e06e7c76.
 Regenerate with: uv run python scripts/gen_coar.py
 """
 
