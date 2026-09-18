@@ -15,6 +15,7 @@ from opencost import (
     ContractPrimaryIdentifierType,
     Data,
     Dates,
+    PartialDate,
     PartOfContractType,
     PublicationAmountPaidType,
     PublicationAmountsPaid,
@@ -91,7 +92,10 @@ def test__contract_without_invoices_in_group__validates_against_xsd(
         invoice_group=[
             ContractInvoiceGroupType(
                 group_id="g-1",
-                invoices_period=ContractInvoicePeriodType(from_="2024", to="2024-12"),  # type: ignore[call-arg]
+                invoices_period=ContractInvoicePeriodType(
+                    from_=PartialDate.parse("2024"),  # pyright: ignore[reportCallIssue]
+                    to=PartialDate.parse("2024-12"),
+                ),  # type: ignore[call-arg]
             )
         ]
     )
@@ -105,7 +109,7 @@ def test__negative_amount_denotes_reimbursement__validates_against_xsd(
         cost_data=PublicationCostDataType(
             invoice=[
                 PublicationInvoiceType(
-                    dates=Dates(paid="2026-01-01"),
+                    dates=Dates(paid=PartialDate.parse("2026-01-01")),
                     amounts_paid=PublicationAmountsPaid(
                         amount_paid=[
                             PublicationAmountPaidType(

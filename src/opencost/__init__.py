@@ -12,6 +12,9 @@ the financial side of scholarly publishing: article-level cost data
 from ._types import NonEmptyString as NonEmptyString
 from ._types import Currency as Currency
 from ._types import DateFormat as DateFormat
+from ._types import PartialDate as PartialDate
+from ._types import PartialDateInput as PartialDateInput
+from ._types import Precision as Precision
 from ._types import ContractCostType as ContractCostType
 from ._types import PublicationCostType as PublicationCostType
 from ._common import Data as Data
@@ -57,6 +60,9 @@ __all__ = [
     "NonEmptyString",
     "Currency",
     "DateFormat",
+    "PartialDate",
+    "PartialDateInput",
+    "Precision",
     "ContractCostType",
     "PublicationCostType",
     "Data",

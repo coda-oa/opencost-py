@@ -14,14 +14,15 @@ from xml.etree import ElementTree as ET
 from pydantic import BaseModel
 
 from .._common import Data
+from .._types import PartialDate
 from ._common import NAMESPACE
 
 
 def _text(value: object) -> str:
     """Format a scalar leaf as XML text.
 
-    Every domain field ends up as one of these four kinds; anything else
-    would silently render via ``str()`` and produce schema-invalid text.
+    Every domain field ends up as one of the known kinds below; anything
+    else would silently render via ``str()`` and produce schema-invalid text.
     """
     if isinstance(value, Enum):
         # Members store their XSD wire string as value, e.g.
@@ -33,7 +34,11 @@ def _text(value: object) -> str:
     if isinstance(value, Decimal):
         # xs:decimal amounts: fixed two decimals, no float artifacts.
         return f"{value:.2f}"
-    # NonEmptyString / Currency / DateFormat are validated plain strings.
+    if isinstance(value, PartialDate):
+        # Precision-preserving canonical form; __str__ is the wire spelling
+        # (YYYY, YYYY-MM or the full isoformat) -- never its anchor date.
+        return str(value)
+    # NonEmptyString / Currency are validated plain strings.
     return str(value)
 
 

@@ -30,6 +30,7 @@ from opencost import (
     InstitutionName,
     InstitutionNameType,
     InstitutionType,
+    PartialDate,
     ParticipationType,
     PartOfContractType,
     PublicationAmountPaidType,
@@ -81,7 +82,7 @@ def make_invoice(number: str = "INV-4711") -> PublicationInvoiceType:
     return PublicationInvoiceType(
         invoice_number=number,
         creditor="Publisher GmbH",
-        dates=Dates(invoice="2026-05-01", paid="2026-05-20"),
+        dates=Dates(invoice=PartialDate.parse("2026-05-01"), paid=PartialDate.parse("2026-05-20")),
         amount_invoice=AmountInvoice(amount=Decimal("1980.00"), currency="EUR"),
         amounts_paid=make_amounts_paid(),
     )
@@ -171,7 +172,7 @@ def test__optional_elements__omitted_when_none() -> None:
         cost_data=PublicationCostDataType(
             invoice=[
                 PublicationInvoiceType(
-                    dates=Dates(paid="2026"),
+                    dates=Dates(paid=PartialDate.parse("2026")),
                     amounts_paid=make_amounts_paid(),
                 )
             ]
@@ -235,7 +236,10 @@ def make_contract(group_id: str = "010zzcb52-deal_de_1234-2026") -> ContractType
     return ContractType(
         contract_name="DEAL",
         institution=make_institution(),
-        participation=ParticipationType(from_="2024-01-01", to="2024-12-31"),  # type: ignore[call-arg]
+        participation=ParticipationType(
+            from_=PartialDate.parse("2024-01-01"),  # pyright: ignore[reportCallIssue]
+            to=PartialDate.parse("2024-12-31"),
+        ),  # type: ignore[call-arg]
         primary_identifier=ContractPrimaryIdentifier(
             type=ContractPrimaryIdentifierType.ESAC, value="deal_de_1234"
         ),
@@ -246,12 +250,15 @@ def make_contract(group_id: str = "010zzcb52-deal_de_1234-2026") -> ContractType
             invoice_group=[
                 ContractInvoiceGroupType(
                     group_id=group_id,
-                    invoices_period=ContractInvoicePeriodType(from_="2024-01-01", to="2024-12-31"),  # type: ignore[call-arg]
+                    invoices_period=ContractInvoicePeriodType(
+                        from_=PartialDate.parse("2024-01-01"),  # pyright: ignore[reportCallIssue]
+                        to=PartialDate.parse("2024-12-31"),
+                    ),  # type: ignore[call-arg]
                     invoice=[
                         ContractInvoiceType(
                             invoice_number="INV-C-1",
                             creditor="Wiley",
-                            dates=Dates(invoice="2024-06-01"),
+                            dates=Dates(invoice=PartialDate.parse("2024-06-01")),
                             amounts_paid=ContractAmountsPaid(
                                 amount_paid=[
                                     ContractAmountPaidType(

@@ -22,6 +22,7 @@ from opencost import (
     InstitutionId,
     InstitutionIdType,
     InstitutionType,
+    PartialDate,
     PublicationAmountPaidType,
     PublicationAmountsPaid,
     PublicationCostDataType,
@@ -46,7 +47,10 @@ def build_data() -> Data:
                     invoice=[
                         PublicationInvoiceType(
                             invoice_number="INV-1",
-                            dates=Dates(invoice="2026-05-01", paid="2026-05-20"),
+                            dates=Dates(
+                                invoice=PartialDate.parse("2026-05-01"),
+                                paid=PartialDate.parse("2026-05-20"),
+                            ),
                             amount_invoice=AmountInvoice(amount=Decimal("1980.00"), currency="EUR"),
                             amounts_paid=PublicationAmountsPaid(
                                 amount_paid=[

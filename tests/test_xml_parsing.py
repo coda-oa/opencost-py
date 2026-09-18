@@ -10,9 +10,11 @@ from pydantic import ValidationError
 from conftest import EXAMPLES_DIR
 from opencost import (
     CoarPublicationType,
+    ContractInvoicePeriodType,
     Data,
     InstitutionIdType,
     InstitutionNameType,
+    PartialDate,
     ParticipationType,
     PublicationCostType,
     from_xml,
@@ -69,7 +71,7 @@ def test__minimal_document__parses_to_typed_models() -> None:
     invoice = pub.cost_data.invoice[0]
     assert invoice.invoice_number == "INV-1"
     assert invoice.creditor is None  # optional element absent
-    assert invoice.dates.paid == "2026"
+    assert invoice.dates.paid == PartialDate.year(2026)
     (amount_paid,) = invoice.amounts_paid.amount_paid
     assert amount_paid.amount == Decimal("1980.00")
     assert isinstance(amount_paid.amount, Decimal)
@@ -104,6 +106,28 @@ def test__alias_from__parses_back_to_python_name() -> None:
     assert parsed.contract[0].participation == expected
 
 
+def test__partial_dates__are_not_normalized_on_the_wire() -> None:
+    # `YYYY` / `YYYY-MM` stay exactly as given: validation must not expand them
+    # into full dates, since the precision itself carries meaning.
+    contract = make_contract()
+    contract.participation = ParticipationType(
+        from_=PartialDate.parse("2024-01"),  # pyright: ignore[reportCallIssue]
+        to=PartialDate.parse("2024-12"),
+    )  # type: ignore[call-arg]
+    period = ContractInvoicePeriodType(
+        from_=PartialDate.parse("2024"),  # pyright: ignore[reportCallIssue]
+        to=PartialDate.parse("2024-12"),
+    )  # type: ignore[call-arg]
+    contract.cost_data.invoice_group[0].invoices_period = period
+    data = Data(contract=[contract])
+    xml = to_xml(data)
+
+    assert "<from>2024</from>" in xml
+    assert "<to>2024-12</to>" in xml
+    assert "<from>2024-01-01</from>" not in xml
+    assert from_xml(xml) == data
+
+
 def test__unknown_element__is_rejected() -> None:
     broken = MINIMAL.replace(
         "<doi>10.1234/abcd</doi>",
@@ -119,6 +143,27 @@ def test__missing_required_element__is_rejected() -> None:
         "<primary_identifier/>",
     )
     with pytest.raises(ValidationError):
+        from_xml(broken)
+
+
+def test__impossible_date_element__is_rejected_with_field_path() -> None:
+    # Regression for opencost-de/opencost#109: upstream's own examples shipped
+    # <to>2020-06-31</to>, which the XSD pattern accepts. Both date-bearing
+    # elements must fail, and the error must name the offending paths.
+    broken = CONTRACT_DOC.replace("<to>2024-12-31</to>", "<to>2020-06-31</to>")
+    with pytest.raises(ValidationError, match="value_error") as excinfo:
+        from_xml(broken)
+
+    locs = {".".join(str(part) for part in error["loc"]) for error in excinfo.value.errors()}
+    assert locs == {
+        "contract.0.participation.to",
+        "contract.0.cost_data.invoice_group.0.invoices_period.to",
+    }
+
+
+def test__inverted_date_range__is_rejected_on_parse() -> None:
+    broken = CONTRACT_DOC.replace("<from>2024-01-01</from>", "<from>2025-06-01</from>")
+    with pytest.raises(ValidationError, match="must not be after"):
         from_xml(broken)
 
 

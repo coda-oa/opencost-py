@@ -19,6 +19,7 @@ from opencost import (
     InstitutionId,
     InstitutionIdType,
     InstitutionType,
+    PartialDate,
     PartOfContractType,
     PublicationAmountPaidType,
     PublicationAmountsPaid,
@@ -32,7 +33,7 @@ from opencost import (
 
 def test_read_side_types_are_canonical() -> None:
     invoice = PublicationInvoiceType(
-        dates=Dates(paid="2026"),
+        dates=Dates(paid=PartialDate.parse("2026")),
         amounts_paid=PublicationAmountsPaid(
             amount_paid=[
                 PublicationAmountPaidType(
@@ -44,7 +45,7 @@ def test_read_side_types_are_canonical() -> None:
         ),
     )
 
-    assert_type(invoice.dates.paid, str | None)
+    assert_type(invoice.dates.paid, PartialDate | None)  # explicit precision, no unions
     assert_type(invoice.invoice_number, str | None)
     assert_type(invoice.creditor, str | None)
 
