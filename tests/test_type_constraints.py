@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 
 import pytest
@@ -120,6 +121,15 @@ def test__dates__reject_impossible_calendar_dates() -> None:
 
     # Every documented precision stays usable, leap day included.
     _ = Dates(invoice=PartialDate.year(2026), paid=PartialDate.day(2024, 2, 29))
+
+
+def test__partial_date__as_date_requires_a_day() -> None:
+    # Callable cast to datetime.date: returns for day precision and raises
+    # for partial values instead of fabricating January 1st.
+    assert PartialDate.day(2026, 5, 1).as_date() == date(2026, 5, 1)
+    for partial in (PartialDate.year(2026), PartialDate.month(2026, 5)):
+        with pytest.raises(ValueError, match="does not specify a day"):
+            partial.as_date()
 
 
 def test__participation__rejects_impossible_and_inverted_dates() -> None:

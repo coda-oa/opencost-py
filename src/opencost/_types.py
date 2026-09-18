@@ -95,6 +95,17 @@ class PartialDate:
         """
         return self.anchor if self.precision == "day" else None
 
+    def as_date(self) -> date:
+        """Return the day, or raise for partial precision.
+
+        The raising sibling of :attr:`full_date`, for code that requires a
+        concrete day and treats reduced precision as an error.
+        """
+        day = self.full_date
+        if day is None:
+            raise ValueError(f"{self} does not specify a day")
+        return day
+
     def __str__(self) -> str:
         """Canonical, lossless wire representation at the stored precision."""
         match self.precision:
