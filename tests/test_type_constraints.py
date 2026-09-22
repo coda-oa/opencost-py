@@ -6,11 +6,13 @@ from opencost import (
     AmountInvoice,
     ContractAmountsPaid,
     ContractCostDataType,
+    ContractInvoicePeriodType,
     ContractSecondaryIdentifiersType,
     Data,
     Dates,
     EitherFieldMixin,
     InstitutionType,
+    ParticipationType,
     PublicationCostDataType,
     PublicationPrimaryIdentifier,
     PublicationSecondaryIdentifiers,
@@ -96,14 +98,49 @@ def test__currency__must_be_three_uppercase_letters() -> None:
         _ = AmountInvoice(amount=Decimal("1.00"), currency="EURO")
 
 
-def test__dates__accept_only_xs_date_formats() -> None:
-    # The XSD constrains the *shape* (YYYY, YYYY-MM, YYYY-MM-DD), not calendar
-    # correctness — "2026-13-99" is shape-valid and stays accepted.
-    for bad in ("2026/05/01", "20261", "26-05"):
+def test__dates__reject_impossible_calendar_dates() -> None:
+    # Shape is the pattern's job; DateFormat additionally demands a real day.
+    # The XSD cannot express that: 2020-06-31 is schema-valid upstream and
+    # shipped in the upstream examples (opencost-de/opencost#109).
+    for bad_shape in ("2026/05/01", "20261", "26-05"):
         with pytest.raises(ValueError):
-            _ = Dates(invoice=bad)
+            _ = Dates(invoice=bad_shape)
 
-    _ = Dates(invoice="2026-13-99")
+    for impossible in (
+        "2026-13-99",
+        "2020-06-31",
+        "2026-02-29",  # 2026 is not a leap year
+        "2026-13",
+        "2026-00",
+        "0000-01-01",
+    ):
+        with pytest.raises(ValueError):
+            _ = Dates(invoice=impossible)
+
+    # Every documented precision stays usable, leap day included.
+    _ = Dates(invoice="2026", paid="2024-02-29")
+
+
+def test__participation__rejects_impossible_and_inverted_dates() -> None:
+    with pytest.raises(ValueError):
+        _ = ParticipationType(from_="2020-01-01", to="2020-06-31")  # type: ignore[call-arg]
+
+    with pytest.raises(ValueError):
+        _ = ParticipationType(from_="2026-12-31", to="2026-01-01")  # type: ignore[call-arg]
+
+    joined = ParticipationType(from_="2019-07-01", to="2021-12-31")  # type: ignore[call-arg]
+    assert (joined.from_, joined.to) == ("2019-07-01", "2021-12-31")
+
+
+def test__invoice_period__compares_partial_dates_as_intervals() -> None:
+    # YYYY, YYYY-MM and YYYY-MM-DD may be mixed: a value covers its whole year
+    # or month, so only a pair that cannot overlap at all counts as inverted.
+    for pair in (("2024", "2024-12"), ("2026-02", "2026"), ("2026", "2026-01-01")):
+        period = ContractInvoicePeriodType(from_=pair[0], to=pair[1])  # type: ignore[call-arg]
+        assert (period.from_, period.to) == pair
+
+    with pytest.raises(ValueError):
+        _ = ContractInvoicePeriodType(from_="2027-01", to="2026-12")  # type: ignore[call-arg]
 
 
 def test__unknown_fields__are_rejected() -> None:

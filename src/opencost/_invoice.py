@@ -2,12 +2,12 @@
 # (doc/README.md of https://github.com/opencost-de/opencost), GPL-3.0-or-later,
 # vendored as submodule vendor/opencost
 from decimal import Decimal
-from typing import Annotated
+from typing import Annotated, Self
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from ._types import ContractCostType, Currency, DateFormat, NonEmptyString, PublicationCostType
-from ._validators import EitherFieldMixin, OpenCostModel
+from ._validators import EitherFieldMixin, OpenCostModel, _check_date_range
 
 
 class PublicationAmountPaidType(OpenCostModel):
@@ -177,6 +177,11 @@ class ContractInvoicePeriodType(OpenCostModel):
         "(`participation // to`) if multiple invoices have been issued over "
         "the total contract duration."
     )
+
+    @model_validator(mode="after")
+    def _billing_period_is_ordered(self) -> Self:
+        _check_date_range(self.from_, self.to)
+        return self
 
 
 class ContractInvoiceGroupType(OpenCostModel):
