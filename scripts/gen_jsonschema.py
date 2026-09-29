@@ -17,14 +17,15 @@ import opencost
 
 
 def build_schema() -> dict[str, object]:
-    """Envelope header first; pydantic contributes $defs and properties.
+    """Envelope header first; pydantic contributes the ``data`` body.
 
-    Overlapping top-level keys (``title``, ``type``,
-    ``additionalProperties``) resolve in favor of the header. There is no
-    top-level ``required``: ``Data``'s either/or rule (``publication`` or
-    ``contract``) is a model validator, not expressible as ``required``.
+    The root mirrors the XML document shape: a single ``data`` property
+    (the XSD root element, ``opencost.xsd``) holding ``Data``'s schema —
+    including its ``anyOf`` mirroring the either/or rule (``publication``
+    or ``contract``) from ``EitherFieldMixin``. ``$defs`` stay at the root,
+    where JSON Schema references resolve.
     """
-    json_schema = OrderedDict(
+    envelope = OrderedDict(
         {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://opencost.de",
@@ -35,13 +36,15 @@ def build_schema() -> dict[str, object]:
             ),
             "type": "object",
             "additionalProperties": False,
+            "required": ["data"],
         }
     )
-    merged = OrderedDict(json_schema)
-    for key, value in opencost.Data.model_json_schema(by_alias=True).items():
-        if key not in merged:
-            merged[key] = value
-    return merged
+    data_schema = OrderedDict(opencost.Data.model_json_schema(by_alias=True))
+    defs = data_schema.pop("$defs", None)
+    if defs:
+        envelope["$defs"] = defs
+    envelope["properties"] = OrderedDict({"data": data_schema})
+    return envelope
 
 
 def main() -> None:

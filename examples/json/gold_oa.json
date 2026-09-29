@@ -1,0 +1,71 @@
+{
+  "data": {
+    "publication": [
+      {
+        "primary_identifier": {
+          "doi": "10.1364/OPTICA.3.000816"
+        },
+        "secondary_identifiers": {
+          "id": [
+            {
+              "value": "PUBDB-2016-02671",
+              "type": "local"
+            },
+            {
+              "value": "oai:bib-pubdb1.desy.de:301439",
+              "type": "oai"
+            },
+            {
+              "value": "10.1364/OPTICA.3.000816",
+              "type": "doi"
+            },
+            {
+              "value": "10.3204/PUBDB-2016-02671",
+              "type": "doi"
+            }
+          ]
+        },
+        "institution": {
+          "name": [
+            {
+              "value": "desy",
+              "type": "short"
+            }
+          ],
+          "id": [
+            {
+              "value": "https://ror.org/01js2sh04",
+              "type": "ror"
+            }
+          ]
+        },
+        "publication_type": "journal article",
+        "cost_data": {
+          "invoice": [
+            {
+              "amount_invoice": {
+                "currency": "USD",
+                "amount": "1350.0"
+              },
+              "invoice_number": "729761",
+              "amounts_paid": {
+                "amount_paid": [
+                  {
+                    "currency": "EUR",
+                    "amount": "1234.95",
+                    "cost_type": "gold-oa"
+                  }
+                ]
+              },
+              "dates": {
+                "invoice": "2016-07-13",
+                "paid": "2017-01-16"
+              },
+              "creditor": "OSA"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

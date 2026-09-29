@@ -1,0 +1,65 @@
+{
+  "data": {
+    "publication": [
+      {
+        "primary_identifier": {
+          "bibliographic_information": {
+            "Title": "Pressure-induced high-spin/low-spin disproportionated state in the Mott insulator FeBO3",
+            "Publisher": "Macmillan Publishers Limited, part of Springer Nature",
+            "isPartOf": "Scientific Reports"
+          }
+        },
+        "secondary_identifiers": {
+          "id": [
+            {
+              "value": "PUBDB-2022-00039",
+              "type": "local"
+            },
+            {
+              "value": "oai:bib-pubdb1.desy.de:473418",
+              "type": "oai"
+            }
+          ]
+        },
+        "institution": {
+          "name": [
+            {
+              "value": "desy",
+              "type": "short"
+            }
+          ],
+          "id": [
+            {
+              "value": "https://ror.org/01js2sh04",
+              "type": "ror"
+            }
+          ]
+        },
+        "publication_type": "journal article",
+        "cost_data": {
+          "invoice": [
+            {
+              "amount_invoice": {
+                "currency": "EUR",
+                "amount": "1681.82"
+              },
+              "amounts_paid": {
+                "amount_paid": [
+                  {
+                    "currency": "EUR",
+                    "amount": "1681.82",
+                    "cost_type": "gold-oa"
+                  }
+                ]
+              },
+              "dates": {
+                "paid": "2022-05-31"
+              },
+              "creditor": "Macmillan Publishers Limited, part of Springer Nature"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

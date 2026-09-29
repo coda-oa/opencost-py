@@ -158,7 +158,15 @@ For validating openCost records in JSON, a JSON Schema can
 be generated with the supplied development script:
 
 ```bash
-uv run python scripts/gen_jsonschema.py > opencost.schema.json
+uv run python scripts/gen_jsonschema.py > examples/opencost.schema.json
+```
+
+Like the upstream JSON schema, records are wrapped in a top-level `data`
+field — the counterpart of the XML root element. The XML examples are
+available as JSON counterparts in `examples/json/`, regenerated with:
+
+```bash
+uv run python scripts/gen_json_examples.py
 ```
 
 ## XML (de)serialization

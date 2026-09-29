@@ -1,0 +1,52 @@
+{
+  "data": {
+    "contract": [
+      {
+        "contract_name": "DEAL-Wiley",
+        "institution": {
+          "id": [
+            {
+              "value": "https://ror.org/01eezs655",
+              "type": "ror"
+            }
+          ]
+        },
+        "participation": {
+          "to": "2021-12-31",
+          "from": "2019-07-01"
+        },
+        "primary_identifier": {
+          "value": "wiley2019deal",
+          "type": "ESAC"
+        },
+        "cost_data": {
+          "invoice_group": [
+            {
+              "group_id": "01eezs655_wiley2019deal_2020",
+              "invoices_period": {
+                "from": "2020-01-01",
+                "to": "2020-06-30"
+              },
+              "invoice": [
+                {
+                  "dates": {
+                    "invoice": "2020-11-01"
+                  },
+                  "amounts_paid": {
+                    "amount_paid": [
+                      {
+                        "currency": "EUR",
+                        "amount": "64040.47",
+                        "cost_type": "publish"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

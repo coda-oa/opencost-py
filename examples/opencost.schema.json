@@ -1,0 +1,1423 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opencost.de",
+  "title": "openCost JSON Schema",
+  "description": "Validates openCost records in JSON. Automatically transformed from the pydantic models based on the original openCost XSD Schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "data"
+  ],
+  "$defs": {
+    "AmountInvoice": {
+      "additionalProperties": false,
+      "description": "Contains the total price as stated on the invoice (\u00a77.2.4, \u00a77.1.3.4).",
+      "properties": {
+        "currency": {
+          "description": "ISO 4217 currency code of the total amount as stated on the invoice.",
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Total amount as stated on the invoice. Net monetary value.",
+          "title": "Amount"
+        }
+      },
+      "required": [
+        "currency",
+        "amount"
+      ],
+      "title": "AmountInvoice",
+      "type": "object"
+    },
+    "BibliographicInformation": {
+      "additionalProperties": false,
+      "description": "Block of bibliographic metadata describing the publication (\u00a72.2).\n\nThis serves as a backup and only has to be given if no `doi` can be\nprovided. Contains a subset of Dublin Core elements.",
+      "properties": {
+        "Title": {
+          "description": "Title of the publication. Dublin Core term (http://purl.org/dc/terms/title).",
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "Publisher": {
+          "description": "Publisher of the journal. Dublin Core term (http://purl.org/dc/terms/publisher).",
+          "minLength": 1,
+          "title": "Publisher",
+          "type": "string"
+        },
+        "isPartOf": {
+          "description": "Name of the journal. Dublin Core term (http://purl.org/dc/terms/isPartOf).",
+          "minLength": 1,
+          "title": "Ispartof",
+          "type": "string"
+        }
+      },
+      "required": [
+        "Title",
+        "Publisher",
+        "isPartOf"
+      ],
+      "title": "BibliographicInformation",
+      "type": "object"
+    },
+    "CoarPublicationType": {
+      "description": "Publication type as the reporting institution categorizes it (\u00a75).\n\nMembers are the COAR controlled vocabulary (v3.2) English labels plus the\ncorresponding COAR PURLs in both `https` (``*_purl``) and `http`\n(``*_purl_http``) spellings - matching the openCost schema enumeration\nexactly. PURLs are recommended as language-independent persistent\nidentifiers; a document parsed with an `http` PURL re-serializes with\n`http` unchanged.",
+      "enum": [
+        "artistic work",
+        "https://purl.org/coar/resource_type/F8RT-TJK0",
+        "http://purl.org/coar/resource_type/F8RT-TJK0",
+        "cartographic material",
+        "https://purl.org/coar/resource_type/c_12cc",
+        "http://purl.org/coar/resource_type/c_12cc",
+        "map",
+        "https://purl.org/coar/resource_type/c_12cd",
+        "http://purl.org/coar/resource_type/c_12cd",
+        "collection",
+        "https://purl.org/coar/resource_type/RMP5-3GQ6",
+        "http://purl.org/coar/resource_type/RMP5-3GQ6",
+        "archival collection",
+        "https://purl.org/coar/resource_type/YC9F-HGCF",
+        "http://purl.org/coar/resource_type/YC9F-HGCF",
+        "court documents",
+        "https://purl.org/coar/resource_type/1YTN-RJZE",
+        "http://purl.org/coar/resource_type/1YTN-RJZE",
+        "dataset",
+        "https://purl.org/coar/resource_type/c_ddb1",
+        "http://purl.org/coar/resource_type/c_ddb1",
+        "aggregated data",
+        "https://purl.org/coar/resource_type/ACF7-8YT9",
+        "http://purl.org/coar/resource_type/ACF7-8YT9",
+        "clinical trial data",
+        "https://purl.org/coar/resource_type/c_cb28",
+        "http://purl.org/coar/resource_type/c_cb28",
+        "compiled data",
+        "https://purl.org/coar/resource_type/FXF3-D3G7",
+        "http://purl.org/coar/resource_type/FXF3-D3G7",
+        "encoded data",
+        "https://purl.org/coar/resource_type/AM6W-6QAW",
+        "http://purl.org/coar/resource_type/AM6W-6QAW",
+        "experimental data",
+        "https://purl.org/coar/resource_type/63NG-B465",
+        "http://purl.org/coar/resource_type/63NG-B465",
+        "genomic data",
+        "https://purl.org/coar/resource_type/A8F1-NPV9",
+        "http://purl.org/coar/resource_type/A8F1-NPV9",
+        "geospatial data",
+        "https://purl.org/coar/resource_type/2H0M-X761",
+        "http://purl.org/coar/resource_type/2H0M-X761",
+        "laboratory notebook",
+        "https://purl.org/coar/resource_type/H41Y-FW7B",
+        "http://purl.org/coar/resource_type/H41Y-FW7B",
+        "measurement and test data",
+        "https://purl.org/coar/resource_type/DD58-GFSX",
+        "http://purl.org/coar/resource_type/DD58-GFSX",
+        "observational data",
+        "https://purl.org/coar/resource_type/FF4C-28RK",
+        "http://purl.org/coar/resource_type/FF4C-28RK",
+        "recorded data",
+        "https://purl.org/coar/resource_type/CQMR-7K63",
+        "http://purl.org/coar/resource_type/CQMR-7K63",
+        "simulation data",
+        "https://purl.org/coar/resource_type/W2XT-7017",
+        "http://purl.org/coar/resource_type/W2XT-7017",
+        "survey data",
+        "https://purl.org/coar/resource_type/NHD0-W6SY",
+        "http://purl.org/coar/resource_type/NHD0-W6SY",
+        "design",
+        "https://purl.org/coar/resource_type/542X-3S04",
+        "http://purl.org/coar/resource_type/542X-3S04",
+        "industrial design",
+        "https://purl.org/coar/resource_type/JBNF-DYAD",
+        "http://purl.org/coar/resource_type/JBNF-DYAD",
+        "layout design",
+        "https://purl.org/coar/resource_type/BW7T-YM2G",
+        "http://purl.org/coar/resource_type/BW7T-YM2G",
+        "image",
+        "https://purl.org/coar/resource_type/c_c513",
+        "http://purl.org/coar/resource_type/c_c513",
+        "moving image",
+        "https://purl.org/coar/resource_type/c_8a7e",
+        "http://purl.org/coar/resource_type/c_8a7e",
+        "video",
+        "https://purl.org/coar/resource_type/c_12ce",
+        "http://purl.org/coar/resource_type/c_12ce",
+        "still image",
+        "https://purl.org/coar/resource_type/c_ecc8",
+        "http://purl.org/coar/resource_type/c_ecc8",
+        "interactive resource",
+        "https://purl.org/coar/resource_type/c_e9a0",
+        "http://purl.org/coar/resource_type/c_e9a0",
+        "website",
+        "https://purl.org/coar/resource_type/c_7ad9",
+        "http://purl.org/coar/resource_type/c_7ad9",
+        "knowledge organization system",
+        "https://purl.org/coar/resource_type/GSZA-Y7V7",
+        "http://purl.org/coar/resource_type/GSZA-Y7V7",
+        "learning object",
+        "https://purl.org/coar/resource_type/c_e059",
+        "http://purl.org/coar/resource_type/c_e059",
+        "other",
+        "https://purl.org/coar/resource_type/c_1843",
+        "http://purl.org/coar/resource_type/c_1843",
+        "patent",
+        "https://purl.org/coar/resource_type/c_15cd",
+        "http://purl.org/coar/resource_type/c_15cd",
+        "PCT application",
+        "https://purl.org/coar/resource_type/SB3Y-W4EH",
+        "http://purl.org/coar/resource_type/SB3Y-W4EH",
+        "design patent",
+        "https://purl.org/coar/resource_type/C53B-JCY5",
+        "http://purl.org/coar/resource_type/C53B-JCY5",
+        "plant patent",
+        "https://purl.org/coar/resource_type/Z907-YMBB",
+        "http://purl.org/coar/resource_type/Z907-YMBB",
+        "plant variety protection",
+        "https://purl.org/coar/resource_type/GPQ7-G5VE",
+        "http://purl.org/coar/resource_type/GPQ7-G5VE",
+        "software patent",
+        "https://purl.org/coar/resource_type/MW8G-3CR8",
+        "http://purl.org/coar/resource_type/MW8G-3CR8",
+        "utility model",
+        "https://purl.org/coar/resource_type/9DKX-KSAF",
+        "http://purl.org/coar/resource_type/9DKX-KSAF",
+        "physical sample",
+        "https://purl.org/coar/resource_type/S7R1-K5P0",
+        "http://purl.org/coar/resource_type/S7R1-K5P0",
+        "research instrument",
+        "https://purl.org/coar/resource_type/8KJG-QS0Y",
+        "http://purl.org/coar/resource_type/8KJG-QS0Y",
+        "software",
+        "https://purl.org/coar/resource_type/c_5ce6",
+        "http://purl.org/coar/resource_type/c_5ce6",
+        "research software",
+        "https://purl.org/coar/resource_type/c_c950",
+        "http://purl.org/coar/resource_type/c_c950",
+        "source code",
+        "https://purl.org/coar/resource_type/QH80-2R4E",
+        "http://purl.org/coar/resource_type/QH80-2R4E",
+        "sound",
+        "https://purl.org/coar/resource_type/c_18cc",
+        "http://purl.org/coar/resource_type/c_18cc",
+        "musical composition",
+        "https://purl.org/coar/resource_type/c_18cd",
+        "http://purl.org/coar/resource_type/c_18cd",
+        "text",
+        "https://purl.org/coar/resource_type/c_18cf",
+        "http://purl.org/coar/resource_type/c_18cf",
+        "annotation",
+        "https://purl.org/coar/resource_type/c_1162",
+        "http://purl.org/coar/resource_type/c_1162",
+        "bibliography",
+        "https://purl.org/coar/resource_type/c_86bc",
+        "http://purl.org/coar/resource_type/c_86bc",
+        "blog post",
+        "https://purl.org/coar/resource_type/c_6947",
+        "http://purl.org/coar/resource_type/c_6947",
+        "book",
+        "https://purl.org/coar/resource_type/c_2f33",
+        "http://purl.org/coar/resource_type/c_2f33",
+        "book part",
+        "https://purl.org/coar/resource_type/c_3248",
+        "http://purl.org/coar/resource_type/c_3248",
+        "conference output",
+        "https://purl.org/coar/resource_type/c_c94f",
+        "http://purl.org/coar/resource_type/c_c94f",
+        "conference paper not in proceedings",
+        "https://purl.org/coar/resource_type/c_18cp",
+        "http://purl.org/coar/resource_type/c_18cp",
+        "conference poster not in proceedings",
+        "https://purl.org/coar/resource_type/c_18co",
+        "http://purl.org/coar/resource_type/c_18co",
+        "conference presentation",
+        "https://purl.org/coar/resource_type/R60J-J5BD",
+        "http://purl.org/coar/resource_type/R60J-J5BD",
+        "conference proceedings",
+        "https://purl.org/coar/resource_type/c_f744",
+        "http://purl.org/coar/resource_type/c_f744",
+        "conference paper",
+        "https://purl.org/coar/resource_type/c_5794",
+        "http://purl.org/coar/resource_type/c_5794",
+        "conference poster",
+        "https://purl.org/coar/resource_type/c_6670",
+        "http://purl.org/coar/resource_type/c_6670",
+        "journal",
+        "https://purl.org/coar/resource_type/c_0640",
+        "http://purl.org/coar/resource_type/c_0640",
+        "editorial",
+        "https://purl.org/coar/resource_type/c_b239",
+        "http://purl.org/coar/resource_type/c_b239",
+        "journal article",
+        "https://purl.org/coar/resource_type/c_6501",
+        "http://purl.org/coar/resource_type/c_6501",
+        "corrigendum",
+        "https://purl.org/coar/resource_type/c_7acd",
+        "http://purl.org/coar/resource_type/c_7acd",
+        "data paper",
+        "https://purl.org/coar/resource_type/c_beb9",
+        "http://purl.org/coar/resource_type/c_beb9",
+        "research article",
+        "https://purl.org/coar/resource_type/c_2df8fbb1",
+        "http://purl.org/coar/resource_type/c_2df8fbb1",
+        "review article",
+        "https://purl.org/coar/resource_type/c_dcae04bc",
+        "http://purl.org/coar/resource_type/c_dcae04bc",
+        "software paper",
+        "https://purl.org/coar/resource_type/c_7bab",
+        "http://purl.org/coar/resource_type/c_7bab",
+        "letter to the editor",
+        "https://purl.org/coar/resource_type/c_545b",
+        "http://purl.org/coar/resource_type/c_545b",
+        "lecture",
+        "https://purl.org/coar/resource_type/c_8544",
+        "http://purl.org/coar/resource_type/c_8544",
+        "letter",
+        "https://purl.org/coar/resource_type/c_0857",
+        "http://purl.org/coar/resource_type/c_0857",
+        "magazine",
+        "https://purl.org/coar/resource_type/c_2cd9",
+        "http://purl.org/coar/resource_type/c_2cd9",
+        "magazine article",
+        "https://purl.org/coar/resource_type/43KC-T6DC",
+        "http://purl.org/coar/resource_type/43KC-T6DC",
+        "manuscript",
+        "https://purl.org/coar/resource_type/c_0040",
+        "http://purl.org/coar/resource_type/c_0040",
+        "musical notation",
+        "https://purl.org/coar/resource_type/c_18cw",
+        "http://purl.org/coar/resource_type/c_18cw",
+        "newspaper",
+        "https://purl.org/coar/resource_type/c_2fe3",
+        "http://purl.org/coar/resource_type/c_2fe3",
+        "newspaper article",
+        "https://purl.org/coar/resource_type/c_998f",
+        "http://purl.org/coar/resource_type/c_998f",
+        "other periodical",
+        "https://purl.org/coar/resource_type/QX5C-AR31",
+        "http://purl.org/coar/resource_type/QX5C-AR31",
+        "preprint",
+        "https://purl.org/coar/resource_type/c_816b",
+        "http://purl.org/coar/resource_type/c_816b",
+        "report",
+        "https://purl.org/coar/resource_type/c_93fc",
+        "http://purl.org/coar/resource_type/c_93fc",
+        "clinical study",
+        "https://purl.org/coar/resource_type/c_7877",
+        "http://purl.org/coar/resource_type/c_7877",
+        "data management plan",
+        "https://purl.org/coar/resource_type/c_ab20",
+        "http://purl.org/coar/resource_type/c_ab20",
+        "knowledge synthesis protocol",
+        "https://purl.org/coar/resource_type/DX5J-TA9R",
+        "http://purl.org/coar/resource_type/DX5J-TA9R",
+        "memorandum",
+        "https://purl.org/coar/resource_type/c_18wz",
+        "http://purl.org/coar/resource_type/c_18wz",
+        "policy report",
+        "https://purl.org/coar/resource_type/c_186u",
+        "http://purl.org/coar/resource_type/c_186u",
+        "project deliverable",
+        "https://purl.org/coar/resource_type/c_18op",
+        "http://purl.org/coar/resource_type/c_18op",
+        "research protocol",
+        "https://purl.org/coar/resource_type/YZ1N-ZFT9",
+        "http://purl.org/coar/resource_type/YZ1N-ZFT9",
+        "research report",
+        "https://purl.org/coar/resource_type/c_18ws",
+        "http://purl.org/coar/resource_type/c_18ws",
+        "technical report",
+        "https://purl.org/coar/resource_type/c_18gh",
+        "http://purl.org/coar/resource_type/c_18gh",
+        "research proposal",
+        "https://purl.org/coar/resource_type/c_baaf",
+        "http://purl.org/coar/resource_type/c_baaf",
+        "review",
+        "https://purl.org/coar/resource_type/c_efa0",
+        "http://purl.org/coar/resource_type/c_efa0",
+        "book review",
+        "https://purl.org/coar/resource_type/c_ba08",
+        "http://purl.org/coar/resource_type/c_ba08",
+        "commentary",
+        "https://purl.org/coar/resource_type/D97F-VB57",
+        "http://purl.org/coar/resource_type/D97F-VB57",
+        "peer review",
+        "https://purl.org/coar/resource_type/H9BQ-739P",
+        "http://purl.org/coar/resource_type/H9BQ-739P",
+        "technical documentation",
+        "https://purl.org/coar/resource_type/c_71bd",
+        "http://purl.org/coar/resource_type/c_71bd",
+        "thesis",
+        "https://purl.org/coar/resource_type/c_46ec",
+        "http://purl.org/coar/resource_type/c_46ec",
+        "bachelor thesis",
+        "https://purl.org/coar/resource_type/c_7a1f",
+        "http://purl.org/coar/resource_type/c_7a1f",
+        "doctoral thesis",
+        "https://purl.org/coar/resource_type/c_db06",
+        "http://purl.org/coar/resource_type/c_db06",
+        "master thesis",
+        "https://purl.org/coar/resource_type/c_bdcc",
+        "http://purl.org/coar/resource_type/c_bdcc",
+        "transcription",
+        "https://purl.org/coar/resource_type/6NC7-GK9S",
+        "http://purl.org/coar/resource_type/6NC7-GK9S",
+        "working paper",
+        "https://purl.org/coar/resource_type/c_8042",
+        "http://purl.org/coar/resource_type/c_8042",
+        "trademark",
+        "https://purl.org/coar/resource_type/H6QP-SC1X",
+        "http://purl.org/coar/resource_type/H6QP-SC1X",
+        "workflow",
+        "https://purl.org/coar/resource_type/c_393c",
+        "http://purl.org/coar/resource_type/c_393c"
+      ],
+      "title": "CoarPublicationType",
+      "type": "string"
+    },
+    "ContractAmountPaidType": {
+      "additionalProperties": false,
+      "description": "An amount paid by the institution (\u00a77.1.3.5.1).\n\nUsually corresponding to an item on the invoice.",
+      "properties": {
+        "currency": {
+          "description": "ISO 4217 currency code of the `amount_paid`.",
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Amount of the `amount_paid`. Net monetary value. Negative or zero values are valid to denote reimbursements.",
+          "title": "Amount"
+        },
+        "cost_type": {
+          "$ref": "#/$defs/ContractCostType",
+          "description": "Describes the object/purpose of the payment. If the VAT cannot be subdivided specifically for the individual cost types, but only for the total amount of the invoice, a separate entry with the `cost_type` `vat` is possible here instead of the `vat` field (7.1.3.5.1.4)."
+        },
+        "vat": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Vat of the `amount_paid`. State in the same currency as `amount`. Must be specified and assigned according to the individual cost type; if a differentiated specification is not possible, use a separate entry with `cost_type` `vat` (7.1.3.5.1.3).",
+          "title": "Vat"
+        }
+      },
+      "required": [
+        "currency",
+        "amount",
+        "cost_type"
+      ],
+      "title": "ContractAmountPaidType",
+      "type": "object"
+    },
+    "ContractAmountsPaid": {
+      "additionalProperties": false,
+      "description": "Contains all itemized amounts paid corresponding to one invoice of a\ncontract (\u00a77.1.3.5).",
+      "properties": {
+        "amount_paid": {
+          "description": "The itemized amounts paid.",
+          "items": {
+            "$ref": "#/$defs/ContractAmountPaidType"
+          },
+          "minItems": 1,
+          "title": "Amount Paid",
+          "type": "array"
+        }
+      },
+      "required": [
+        "amount_paid"
+      ],
+      "title": "ContractAmountsPaid",
+      "type": "object"
+    },
+    "ContractCostDataType": {
+      "additionalProperties": false,
+      "description": "Aggregates payments related to a contract (\u00a77, contract).\n\nThe `invoice` elements can be combined into one or more common\n`invoice_group` elements referring to a shared `invoices_period` of the\ncontract concerned.",
+      "properties": {
+        "invoice_group": {
+          "description": "The billing periods of the contract.",
+          "items": {
+            "$ref": "#/$defs/ContractInvoiceGroupType"
+          },
+          "minItems": 1,
+          "title": "Invoice Group",
+          "type": "array"
+        }
+      },
+      "required": [
+        "invoice_group"
+      ],
+      "title": "ContractCostDataType",
+      "type": "object"
+    },
+    "ContractCostType": {
+      "description": "Contract cost type (\u00a77.1.3.5.1.3): the object/purpose of the payment.\n\nDefinitions from the openCost cost-types glossary:\n\n- `publish`: charges for Open Access publishing within the framework of\n  (e.g. Publish & Read) contracts; flat rate to cover all publication\n  services for publishing in publication organs covered by the contract.\n- `read`: charges for the read access of a Closed Access portfolio within\n  the framework of (e.g. Publish & Read or subscription) contracts.\n- `publish and read`: charges for publishing under 'Publish & Read' or\n  'Read & Publish' contracts where the publish and read portions are not\n  itemized separately on an invoice.\n- `service fee`: additional charges to cover service and operating costs.\n- `vat`: value added tax.",
+      "enum": [
+        "publish",
+        "read",
+        "publish and read",
+        "service fee",
+        "vat"
+      ],
+      "title": "ContractCostType",
+      "type": "string"
+    },
+    "ContractInvoiceGroupType": {
+      "additionalProperties": false,
+      "description": "Contains all invoices that belong to a billing period within a contract\n(\u00a77.1).\n\nSuch a contract phase is limited by a time period (`invoices_period`) to\nwhich a respective invoice can be assigned.",
+      "properties": {
+        "group_id": {
+          "description": "An id to uniquely name and identify the `invoice_group`. Necessary to link not only from an individual publication to the global contract but also to a specific invoice and contract period: relates cost data for an `opencost:publication` to this contract via the `opencost:part_of_contract` element. Generating a `uuid` or using another type of unique identifier is recommended.",
+          "minLength": 1,
+          "title": "Group Id",
+          "type": "string"
+        },
+        "invoices_period": {
+          "$ref": "#/$defs/ContractInvoicePeriodType",
+          "description": "Identifies the time frame the invoices in this group refer to."
+        },
+        "invoice": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/ContractInvoiceType"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The invoices belonging to this billing period.",
+          "title": "Invoice"
+        }
+      },
+      "required": [
+        "group_id",
+        "invoices_period"
+      ],
+      "title": "ContractInvoiceGroupType",
+      "type": "object"
+    },
+    "ContractInvoicePeriodType": {
+      "additionalProperties": false,
+      "description": "Identifies the time frame an invoice refers to (\u00a77.1.2).",
+      "properties": {
+        "from": {
+          "description": "Start date of the time frame the invoice refers to. Can be different to an institution's contract accession (`participation // from`) if multiple invoices have been issued over the total contract duration.",
+          "pattern": "^[0-9]{4}(-[0-9]{2}){0,2}$",
+          "title": "From",
+          "type": "string"
+        },
+        "to": {
+          "description": "End date of the time frame the invoice refers to. Can be different to an institution's contract termination (`participation // to`) if multiple invoices have been issued over the total contract duration.",
+          "pattern": "^[0-9]{4}(-[0-9]{2}){0,2}$",
+          "title": "To",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ],
+      "title": "ContractInvoicePeriodType",
+      "type": "object"
+    },
+    "ContractInvoiceType": {
+      "additionalProperties": false,
+      "description": "Encapsulates payment information for a contract, meant to correspond to\na real-world invoice (\u00a77.1.3).",
+      "properties": {
+        "amount_invoice": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AmountInvoice"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The total price as stated on the invoice for the contract."
+        },
+        "invoice_number": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional invoice number. As mentioned on the invoice.",
+          "title": "Invoice Number"
+        },
+        "creditor": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Payment receiver as mentioned on the invoice. Might not be the actual publisher, but also e.g. a service provider.",
+          "title": "Creditor"
+        },
+        "dates": {
+          "$ref": "#/$defs/Dates",
+          "description": "Payment-related dates of this invoice."
+        },
+        "amounts_paid": {
+          "$ref": "#/$defs/ContractAmountsPaid",
+          "description": "All itemized amounts paid corresponding to this invoice."
+        }
+      },
+      "required": [
+        "dates",
+        "amounts_paid"
+      ],
+      "title": "ContractInvoiceType",
+      "type": "object"
+    },
+    "ContractPrimaryIdentifier": {
+      "additionalProperties": false,
+      "description": "Persistent, global identifier for the contract (\u00a75).\n\nCurrently an `ESAC` ID\n(https://esac-initiative.org/about/transformative-agreements/agreement-registry/)\nor an `opencostid` (a self-issued id for the contract).",
+      "properties": {
+        "value": {
+          "description": "Identifier value of the contract.",
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/ContractPrimaryIdentifierType",
+          "description": "Identifier scheme; `ESAC` or `opencostid`."
+        }
+      },
+      "required": [
+        "value",
+        "type"
+      ],
+      "title": "ContractPrimaryIdentifier",
+      "type": "object"
+    },
+    "ContractPrimaryIdentifierType": {
+      "description": "Contract primary identifier scheme (\u00a75.1).\n\n`ESAC` or `opencostid` is accepted.",
+      "enum": [
+        "ESAC",
+        "opencostid"
+      ],
+      "title": "ContractPrimaryIdentifierType",
+      "type": "string"
+    },
+    "ContractSecondaryIdType": {
+      "additionalProperties": false,
+      "description": "Secondary identifier for the contract (\u00a76.1).",
+      "properties": {
+        "value": {
+          "description": "Identifier value.",
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/ContractSecondaryIdTypeEnum",
+          "description": "Identifier scheme of `value`."
+        }
+      },
+      "required": [
+        "value",
+        "type"
+      ],
+      "title": "ContractSecondaryIdType",
+      "type": "object"
+    },
+    "ContractSecondaryIdTypeEnum": {
+      "description": "Contract secondary identifier scheme (\u00a76.1.1).",
+      "enum": [
+        "oai",
+        "ezb",
+        "local",
+        "ESAC",
+        "opencostid"
+      ],
+      "title": "ContractSecondaryIdTypeEnum",
+      "type": "string"
+    },
+    "ContractSecondaryIdentifiersType": {
+      "additionalProperties": false,
+      "description": "Contains additional, optional identifiers for the contract (\u00a76).",
+      "properties": {
+        "id": {
+          "description": "Additional (persistent) identifiers.",
+          "items": {
+            "$ref": "#/$defs/ContractSecondaryIdType"
+          },
+          "minItems": 1,
+          "title": "Id",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ContractSecondaryIdentifiersType",
+      "type": "object"
+    },
+    "ContractType": {
+      "additionalProperties": false,
+      "description": "Top-level element, corresponds to a contract for which costs are to be\nrecorded (\u00a71).\n\nExamples of such contracts are transformative agreements and memberships.",
+      "properties": {
+        "contract_name": {
+          "description": "A human-readable label for the contract.",
+          "minLength": 1,
+          "title": "Contract Name",
+          "type": "string"
+        },
+        "institution": {
+          "$ref": "#/$defs/InstitutionType",
+          "description": "Contains information to identify the institution taking part in the contract."
+        },
+        "participation": {
+          "$ref": "#/$defs/ParticipationType",
+          "description": "The dates the institution joined and left the contract."
+        },
+        "primary_identifier": {
+          "$ref": "#/$defs/ContractPrimaryIdentifier",
+          "description": "Persistent, global identifier for the contract; currently `ESAC` or `opencostid` is accepted."
+        },
+        "secondary_identifiers": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContractSecondaryIdentifiersType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Additional, optional identifiers for the contract."
+        },
+        "cost_data": {
+          "$ref": "#/$defs/ContractCostDataType",
+          "description": "Aggregates payments related to this contract."
+        }
+      },
+      "required": [
+        "contract_name",
+        "institution",
+        "participation",
+        "primary_identifier",
+        "cost_data"
+      ],
+      "title": "ContractType",
+      "type": "object"
+    },
+    "Dates": {
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "properties": {
+            "invoice": {
+              "pattern": "^[0-9]{4}(-[0-9]{2}){0,2}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "invoice"
+          ]
+        },
+        {
+          "properties": {
+            "paid": {
+              "pattern": "^[0-9]{4}(-[0-9]{2}){0,2}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "paid"
+          ]
+        }
+      ],
+      "description": "Contains different payment-related dates (\u00a77.2.3).\n\nAt least one of `invoice` or `paid` must be given.",
+      "properties": {
+        "invoice": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}(-[0-9]{2}){0,2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Invoice date. Either this element or the date `paid` is required.",
+          "title": "Invoice"
+        },
+        "paid": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}(-[0-9]{2}){0,2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Date of payment. Either this element or the invoice date is required.",
+          "title": "Paid"
+        }
+      },
+      "title": "Dates",
+      "type": "object"
+    },
+    "InstitutionId": {
+      "additionalProperties": false,
+      "description": "Contains persistent identifiers for an institution (\u00a74.1, \u00a73.1).",
+      "properties": {
+        "value": {
+          "description": "Institution identifier value, e.g. a ROR id.",
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/InstitutionIdType",
+          "description": "Identifier scheme of `value`."
+        }
+      },
+      "required": [
+        "value",
+        "type"
+      ],
+      "title": "InstitutionId",
+      "type": "object"
+    },
+    "InstitutionIdType": {
+      "description": "Identifier scheme an institution can be referenced by.",
+      "enum": [
+        "ror",
+        "isni",
+        "ringgold"
+      ],
+      "title": "InstitutionIdType",
+      "type": "string"
+    },
+    "InstitutionName": {
+      "additionalProperties": false,
+      "description": "Human-readable institution name (\u00a74.2, \u00a73.2).",
+      "properties": {
+        "value": {
+          "description": "Name of the institution.",
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/InstitutionNameType",
+          "description": "`full` or `short` name form."
+        }
+      },
+      "required": [
+        "value",
+        "type"
+      ],
+      "title": "InstitutionName",
+      "type": "object"
+    },
+    "InstitutionNameType": {
+      "description": "Whether the name is given in full or abbreviated.",
+      "enum": [
+        "full",
+        "short"
+      ],
+      "title": "InstitutionNameType",
+      "type": "string"
+    },
+    "InstitutionType": {
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "properties": {
+            "name": {
+              "items": {
+                "$ref": "#/$defs/InstitutionName"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        {
+          "properties": {
+            "id": {
+              "items": {
+                "$ref": "#/$defs/InstitutionId"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      ],
+      "description": "Contains information to identify the institution.\n\nEither `id` (persistent identifiers) or `name` (human-readable) must be\ngiven.",
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/InstitutionName"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The names are meant to be human-readable. Either this element or the institution's `id` is required.",
+          "title": "Name"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/InstitutionId"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Either this element or the institution's `name` is required.",
+          "title": "Id"
+        }
+      },
+      "title": "InstitutionType",
+      "type": "object"
+    },
+    "PartOfContractType": {
+      "additionalProperties": false,
+      "description": "Contains identifiers to link this publication to a contract (\u00a77.1).\n\nProviding just a `primary_identifier` is possible to denote that a\npublication belongs to a contract but was still paid for individually.",
+      "properties": {
+        "group_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Identical to the `group_id` of an `opencost:contract//opencost:cost_data//opencost:invoice_group` element. Indicates that publication costs relate to that particular `invoice_group` within a defined accounting period of a contract. Can be omitted to just link a publication to a certain contract. Generating a `uuid` or using another type of unique identifier is recommended.",
+          "title": "Group Id"
+        },
+        "primary_identifier": {
+          "$ref": "#/$defs/ContractPrimaryIdentifier",
+          "description": "Identical to the `primary_identifier` of an `opencost:contract` and indicates that the article was published under that contract."
+        }
+      },
+      "required": [
+        "primary_identifier"
+      ],
+      "title": "PartOfContractType",
+      "type": "object"
+    },
+    "ParticipationType": {
+      "additionalProperties": false,
+      "description": "Contains information on the dates an institution joined and left a\ncontract (\u00a74).",
+      "properties": {
+        "to": {
+          "description": "The date when the institution left the contract. Not to be confused with the end date of the agreement itself, which may be later.",
+          "pattern": "^[0-9]{4}(-[0-9]{2}){0,2}$",
+          "title": "To",
+          "type": "string"
+        },
+        "from": {
+          "description": "The date when the institution joined the contract. Not to be confused with the start date of the agreement itself, which may be earlier.",
+          "pattern": "^[0-9]{4}(-[0-9]{2}){0,2}$",
+          "title": "From",
+          "type": "string"
+        }
+      },
+      "required": [
+        "to",
+        "from"
+      ],
+      "title": "ParticipationType",
+      "type": "object"
+    },
+    "PublicationAmountPaidType": {
+      "additionalProperties": false,
+      "description": "A single amount paid by the institution (\u00a77.2.5.1).\n\nUsually corresponding to an item on the invoice.",
+      "properties": {
+        "currency": {
+          "description": "ISO 4217 currency code of the `amount_paid`.",
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "description": "Amount of the `amount_paid`. Net monetary value. Negative or zero values are valid to denote reimbursements or Diamond OA models.",
+          "title": "Amount"
+        },
+        "cost_type": {
+          "$ref": "#/$defs/PublicationCostType",
+          "description": "Describes the object/purpose of the payment. If the VAT cannot be subdivided specifically for the individual cost types, but only for the total amount of the invoice, a separate entry with the `cost_type` `vat` is possible here instead of the `vat` field (7.2.5.1.4)."
+        },
+        "vat": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Vat of the `amount_paid`. State in the same currency as `amount`. Must be specified and assigned according to the individual cost type; if a differentiated specification is not possible, use a separate entry with `cost_type` `vat` (7.2.5.1.3).",
+          "title": "Vat"
+        }
+      },
+      "required": [
+        "currency",
+        "amount",
+        "cost_type"
+      ],
+      "title": "PublicationAmountPaidType",
+      "type": "object"
+    },
+    "PublicationAmountsPaid": {
+      "additionalProperties": false,
+      "description": "Contains all itemized amounts paid corresponding to one invoice (\u00a77.2.5).",
+      "properties": {
+        "amount_paid": {
+          "description": "The itemized amounts paid.",
+          "items": {
+            "$ref": "#/$defs/PublicationAmountPaidType"
+          },
+          "minItems": 1,
+          "title": "Amount Paid",
+          "type": "array"
+        }
+      },
+      "required": [
+        "amount_paid"
+      ],
+      "title": "PublicationAmountsPaid",
+      "type": "object"
+    },
+    "PublicationCostDataType": {
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "properties": {
+            "invoice": {
+              "items": {
+                "$ref": "#/$defs/PublicationInvoiceType"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "invoice"
+          ]
+        },
+        {
+          "properties": {
+            "part_of_contract": {
+              "$ref": "#/$defs/PartOfContractType"
+            }
+          },
+          "required": [
+            "part_of_contract"
+          ]
+        }
+      ],
+      "description": "Aggregates all publication-related payments (\u00a77).\n\nPayments are recorded as `invoice` elements; a transformative agreement\ncan be referenced via a `part_of_contract` element. At least one of the\ntwo must be provided.",
+      "properties": {
+        "invoice": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/PublicationInvoiceType"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "An `invoice` block encapsulates payment information and is meant to correspond to a real-world invoice.",
+          "title": "Invoice"
+        },
+        "part_of_contract": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PartOfContractType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Links this publication to a contract."
+        }
+      },
+      "title": "PublicationCostDataType",
+      "type": "object"
+    },
+    "PublicationCostType": {
+      "description": "Publication cost type (\u00a77.2.5.1.3): the object/purpose of the payment.\n\nDefinitions from the openCost cost-types glossary:\n\n- `gold-oa`: charges for the Open Access status in a pure Open Access\n  publication organ; usually named APC, BPC etc. on the invoice.\n- `hybrid-oa`: charges for the Open Access status in a Closed Access\n  publication organ.\n- `vat`: value added tax.\n- `colour charge`: charges for colour printing (colour images, pages,\n  illustrations, etc.); relevance for print versions.\n- `cover charge`: charges for the illustration of a cover (publication of\n  content for cover/cover design).\n- `page charge`: charges for excess length or page-based billing (the\n  latter may then not appear as an additional charge, but functionally\n  replaces a Processing Charge, to be assigned to the gold- or hybrid-oa\n  categories).\n- `permission`: charges for the acquisition of a license (right of use,\n  e.g. for an image in order to be able to use it within a publication).\n- `publication charge`: publication charges to be paid in the context of\n  Closed Access.\n- `reprint`: reproduction charges for copies of publications.\n- `submission fee`: charges for submitting a publication.\n- `payment fee`: charges for the financial transaction of the payment\n  (e.g. bank transfer or credit card charges).\n- `other`: all other charges that are not already defined elsewhere in\n  the glossary and cannot be assigned to any of the named categories.",
+      "enum": [
+        "gold-oa",
+        "vat",
+        "colour charge",
+        "cover charge",
+        "hybrid-oa",
+        "other",
+        "page charge",
+        "permission",
+        "publication charge",
+        "reprint",
+        "submission fee",
+        "payment fee"
+      ],
+      "title": "PublicationCostType",
+      "type": "string"
+    },
+    "PublicationInvoiceType": {
+      "additionalProperties": false,
+      "description": "Encapsulates payment information, meant to correspond to a real-world\ninvoice (\u00a77.2).",
+      "properties": {
+        "amount_invoice": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AmountInvoice"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The total price as stated on the invoice."
+        },
+        "invoice_number": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional invoice number. As mentioned on the invoice.",
+          "title": "Invoice Number"
+        },
+        "amounts_paid": {
+          "$ref": "#/$defs/PublicationAmountsPaid",
+          "description": "All itemized amounts paid corresponding to this invoice."
+        },
+        "dates": {
+          "$ref": "#/$defs/Dates",
+          "description": "Payment-related dates of this invoice."
+        },
+        "creditor": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Payment receiver as mentioned on the invoice. Might not be the actual publisher, but also e.g. a service provider from another publisher.",
+          "title": "Creditor"
+        }
+      },
+      "required": [
+        "amounts_paid",
+        "dates"
+      ],
+      "title": "PublicationInvoiceType",
+      "type": "object"
+    },
+    "PublicationPrimaryIdentifier": {
+      "description": "Contains the primary identifier for the publication (\u00a72).\n\nA `doi` is strongly preferred, otherwise a `bibliographic_information`\nblock has to be provided instead.",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "doi": {
+              "description": "Digital Object Identifier (doi) to identify the publication. Serves as primary identifier.",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "doi"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "bibliographic_information": {
+              "$ref": "#/$defs/BibliographicInformation",
+              "description": "Backup description; only has to be given if no `doi` can be provided."
+            }
+          },
+          "required": [
+            "bibliographic_information"
+          ],
+          "type": "object"
+        }
+      ],
+      "title": "PublicationPrimaryIdentifier",
+      "type": "object"
+    },
+    "PublicationSecondaryIdType": {
+      "additionalProperties": false,
+      "description": "Secondary identifier for the publication (\u00a73.1).",
+      "properties": {
+        "value": {
+          "description": "Identifier value.",
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/PublicationSecondaryIdTypeEnum",
+          "description": "Identifier scheme of `value`."
+        }
+      },
+      "required": [
+        "value",
+        "type"
+      ],
+      "title": "PublicationSecondaryIdType",
+      "type": "object"
+    },
+    "PublicationSecondaryIdTypeEnum": {
+      "description": "Secondary identifier scheme (\u00a73.1.1).",
+      "enum": [
+        "doi",
+        "handle",
+        "urn",
+        "isbn",
+        "pmid",
+        "pmc",
+        "arxiv",
+        "oai",
+        "local"
+      ],
+      "title": "PublicationSecondaryIdTypeEnum",
+      "type": "string"
+    },
+    "PublicationSecondaryIdentifiers": {
+      "additionalProperties": false,
+      "description": "Contains additional, optional identifiers (\u00a73).",
+      "properties": {
+        "id": {
+          "description": "Additional (persistent) identifiers for the publication.",
+          "items": {
+            "$ref": "#/$defs/PublicationSecondaryIdType"
+          },
+          "minItems": 1,
+          "title": "Id",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "PublicationSecondaryIdentifiers",
+      "type": "object"
+    },
+    "PublicationType": {
+      "additionalProperties": false,
+      "description": "Top-level element, corresponds to a single publication for which costs\nare to be recorded (\u00a71).",
+      "properties": {
+        "primary_identifier": {
+          "$ref": "#/$defs/PublicationPrimaryIdentifier"
+        },
+        "secondary_identifiers": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicationSecondaryIdentifiers"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "institution": {
+          "$ref": "#/$defs/InstitutionType",
+          "description": "Contains information to identify the paying institution."
+        },
+        "publication_type": {
+          "$ref": "#/$defs/CoarPublicationType",
+          "description": "Type of the publication as the reporting institution categorizes it. COAR controlled vocabulary (v3.2) English label or the corresponding COAR PURL; PURLs are recommended as language-independent persistent identifiers."
+        },
+        "external_costsplitting": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if costs for this publication have been split with another institution. This element should only be added if there is distinct information (either positive or negative) on external cost splitting.",
+          "title": "External Costsplitting"
+        },
+        "cost_data": {
+          "$ref": "#/$defs/PublicationCostDataType",
+          "description": "Aggregates all publication-related payments."
+        }
+      },
+      "required": [
+        "primary_identifier",
+        "institution",
+        "publication_type",
+        "cost_data"
+      ],
+      "title": "PublicationType",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "data": {
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "properties": {
+            "publication": {
+              "items": {
+                "$ref": "#/$defs/PublicationType"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "publication"
+          ]
+        },
+        {
+          "properties": {
+            "contract": {
+              "items": {
+                "$ref": "#/$defs/ContractType"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "contract"
+          ]
+        }
+      ],
+      "properties": {
+        "publication": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/PublicationType"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publication"
+        },
+        "contract": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/ContractType"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Contract"
+        }
+      },
+      "title": "Data",
+      "type": "object"
+    }
+  }
+}

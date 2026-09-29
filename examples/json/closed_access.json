@@ -1,0 +1,71 @@
+{
+  "data": {
+    "publication": [
+      {
+        "primary_identifier": {
+          "doi": "10.1039/D0CP04104A"
+        },
+        "secondary_identifiers": {
+          "id": [
+            {
+              "value": "PUBDB-2020-04988",
+              "type": "local"
+            },
+            {
+              "value": "oai:bib-pubdb1.desy.de:453035",
+              "type": "oai"
+            },
+            {
+              "value": "10.1039/D0CP04104A",
+              "type": "doi"
+            },
+            {
+              "value": "10.3204/PUBDB-2020-04988",
+              "type": "doi"
+            }
+          ]
+        },
+        "institution": {
+          "name": [
+            {
+              "value": "desy",
+              "type": "short"
+            }
+          ],
+          "id": [
+            {
+              "value": "https://ror.org/01js2sh04",
+              "type": "ror"
+            }
+          ]
+        },
+        "publication_type": "journal article",
+        "cost_data": {
+          "invoice": [
+            {
+              "amount_invoice": {
+                "currency": "GBP",
+                "amount": "500.0"
+              },
+              "invoice_number": "INV_008530",
+              "amounts_paid": {
+                "amount_paid": [
+                  {
+                    "currency": "EUR",
+                    "amount": "559.69",
+                    "cost_type": "cover charge"
+                  }
+                ]
+              },
+              "dates": {
+                "invoice": "2020-12-10",
+                "paid": "2020-12-15"
+              },
+              "creditor": "RSC Publ."
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "data": {
+    "publication": [
+      {
+        "primary_identifier": {
+          "doi": "10.1364/OME.460445"
+        },
+        "secondary_identifiers": {
+          "id": [
+            {
+              "value": "PUBDB-2022-02875",
+              "type": "local"
+            },
+            {
+              "value": "oai:bib-pubdb1.desy.de:479017",
+              "type": "oai"
+            },
+            {
+              "value": "10.1364/OME.460445",
+              "type": "doi"
+            },
+            {
+              "value": "10.3204/PUBDB-2022-02875",
+              "type": "doi"
+            }
+          ]
+        },
+        "institution": {
+          "name": [
+            {
+              "value": "desy",
+              "type": "short"
+            }
+          ],
+          "id": [
+            {
+              "value": "https://ror.org/01js2sh04",
+              "type": "ror"
+            }
+          ]
+        },
+        "publication_type": "journal article",
+        "cost_data": {
+          "invoice": [
+            {
+              "amount_invoice": {
+                "currency": "EUR",
+                "amount": "30.72"
+              },
+              "amounts_paid": {
+                "amount_paid": [
+                  {
+                    "currency": "EUR",
+                    "amount": "30.72",
+                    "cost_type": "other"
+                  }
+                ]
+              },
+              "dates": {
+                "invoice": "2022-07-06",
+                "paid": "2022-07-06"
+              },
+              "creditor": "OSA"
+            },
+            {
+              "amount_invoice": {
+                "currency": "USD",
+                "amount": "2173.0"
+              },
+              "invoice_number": "1699976",
+              "amounts_paid": {
+                "amount_paid": [
+                  {
+                    "currency": "EUR",
+                    "amount": "1501.58",
+                    "cost_type": "gold-oa"
+                  },
+                  {
+                    "currency": "EUR",
+                    "amount": "546.68",
+                    "cost_type": "page charge"
+                  }
+                ]
+              },
+              "dates": {
+                "invoice": "2022-06-09",
+                "paid": "2022-06-09"
+              },
+              "creditor": "OSA"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
