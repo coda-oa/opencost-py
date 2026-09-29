@@ -48,6 +48,8 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 src = ["src", "tests"]
+# upstream submodule; not our code, never reformatted
+extend-exclude = ["vendor"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "RUF"]
@@ -59,9 +61,12 @@ select = ["E", "F", "I", "UP", "B", "RUF"]
 strict = true
 mypy_path = "src"
 packages = ["opencost"]
+# never follow into the upstream submodule
+exclude = ["vendor/"]
 
 [tool.pyright]
 include = ["src", "tests"]
+exclude = ["vendor"]
 extraPaths = ["tests"]
 typeCheckingMode = "strict"
 
@@ -70,4 +75,5 @@ typeCheckingMode = "strict"
 # One checker (mypy) polices src/; the multi-checker sessions focus on tests/,
 # i.e. the public API as users call it.
 project-includes = ["tests"]
+project-excludes = ["vendor"]
 search_path = ["tests"]

@@ -1,7 +1,7 @@
 from typing import Any, ClassVar, Self
 
-from pydantic import BaseModel, ConfigDict, model_validator
-from pydantic.json_schema import GetJsonSchemaHandler, JsonSchemaValue
+from pydantic import BaseModel, ConfigDict, GetJsonSchemaHandler, model_validator
+from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import CoreSchema
 
 

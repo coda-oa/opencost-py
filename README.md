@@ -40,9 +40,7 @@ publication = opencost.PublicationType(
                 invoice_number="INV-4711",
                 creditor="Publisher GmbH",
                 dates=opencost.Dates(invoice="2026-05-01", paid="2026-05-20"),
-                amount_invoice=opencost.AmountInvoice(
-                    amount=Decimal("1980.00"), currency="EUR"
-                ),
+                amount_invoice=opencost.AmountInvoice(amount=Decimal("1980.00"), currency="EUR"),
                 amounts_paid=opencost.PublicationAmountsPaid(
                     amount_paid=[
                         opencost.PublicationAmountPaidType(

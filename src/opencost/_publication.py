@@ -6,8 +6,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import Annotated, Self
 
-from pydantic import Field, model_validator
-from pydantic.json_schema import GetJsonSchemaHandler, JsonSchemaValue
+from pydantic import Field, GetJsonSchemaHandler, model_validator
+from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import CoreSchema
 
 from ._coar import CoarPublicationType

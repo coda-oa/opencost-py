@@ -4,9 +4,7 @@ import nox
 
 nox.options.default_venv_backend = "uv"
 
-TEST_DEPS = nox.project.dependency_groups(
-    nox.project.load_toml("pyproject.toml"), "test"
-)
+TEST_DEPS = nox.project.dependency_groups(nox.project.load_toml("pyproject.toml"), "test")
 
 
 @nox.session
