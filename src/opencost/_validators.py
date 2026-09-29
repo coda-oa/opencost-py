@@ -1,6 +1,8 @@
 from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic.json_schema import GetJsonSchemaHandler, JsonSchemaValue
+from pydantic_core import CoreSchema
 
 
 class OpenCostModel(BaseModel):
@@ -35,6 +37,37 @@ class EitherFieldMixin(OpenCostModel):
             choices = " or ".join(f"'{name}'" for name in names)
             raise ValueError(f"at least one of {choices} must be set")
         return self
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler
+    ) -> JsonSchemaValue:
+        """Mirror the at-least-one model validator as JSON Schema ``anyOf``.
+
+        Pydantic cannot derive ``anyOf`` from ``mode="after"`` validators.
+        Each branch requires one of ``either_fields`` to be present with a
+        usable value — non-empty for lists, non-null for scalars — matching
+        the truthiness check in ``_at_least_one_either_field``. The branch
+        value schema is the generated property schema minus its ``null``
+        alternative, so constraints (``minItems``, patterns, ``$ref``) stay
+        in sync with the field types.
+        """
+        schema = handler(core_schema)
+        properties = schema["properties"]
+        branches = []
+        for field_name in cls.either_fields:
+            alias = cls.model_fields[field_name].alias or field_name
+            prop = properties[alias]
+            value = (
+                next(a for a in prop["anyOf"] if a.get("type") != "null")
+                if "anyOf" in prop
+                else prop
+            )
+            if value.get("type") == "array" and "minItems" not in value:
+                value = {**value, "minItems": 1}
+            branches.append({"required": [alias], "properties": {alias: value}})
+        schema["anyOf"] = branches
+        return schema
 
 
 def _interval_start(value: str) -> tuple[int, int, int]:

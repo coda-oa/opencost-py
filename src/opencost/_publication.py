@@ -7,6 +7,8 @@ from enum import Enum
 from typing import Annotated, Self
 
 from pydantic import Field, model_validator
+from pydantic.json_schema import GetJsonSchemaHandler, JsonSchemaValue
+from pydantic_core import CoreSchema
 
 from ._coar import CoarPublicationType
 from ._contract import ContractPrimaryIdentifier
@@ -90,6 +92,37 @@ class PublicationPrimaryIdentifier(OpenCostModel):
         if (self.doi is not None) == (self.bibliographic_information is not None):
             raise ValueError("exactly one of 'doi' or 'bibliographic_information' must be set")
         return self
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler
+    ) -> JsonSchemaValue:
+        """Mirror the exactly-one-of model validator as JSON Schema ``oneOf``.
+        Pydantic cannot derive ``oneOf`` from ``mode="after"`` validators, so
+        the flat two-optional-fields shape is rewritten: each branch requires
+        exactly one of the two fields, with the generated property schema
+        (minus the ``null`` alternative) as the branch's only property.
+        """
+        schema = handler(core_schema)
+        schema["oneOf"] = [
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [name],
+                "properties": {
+                    name: {
+                        **schema["properties"][name]["anyOf"][0],
+                        "description": schema["properties"][name].get("description"),
+                    }
+                },
+            }
+            for name in ("doi", "bibliographic_information")
+        ]
+        # Branches carry their own ``additionalProperties``; the parent's
+        # would reject every key now that ``properties`` is gone.
+        schema.pop("properties")
+        schema.pop("additionalProperties", None)
+        return schema
 
 
 class PartOfContractType(OpenCostModel):
