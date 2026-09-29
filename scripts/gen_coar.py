@@ -56,13 +56,13 @@ def read_concepts() -> list[tuple[str, str, str]]:
     return concepts
 
 
-def render(concepts: list[tuple[str, str, str]], pin: str) -> str:
+def render(concepts: list[tuple[str, str, str]]) -> str:
     lines = [
         '"""COAR controlled vocabulary (v3.2) publication types.',
         "",
         "GENERATED FILE - do not edit.",
         "Source: vendor/opencost/doc/opencost_types.xsd, simpleType",
-        f"``coar_publication_type_vocab``, submodule pin {pin}.",
+        "``coar_publication_type_vocab``.",
         "Regenerate with: uv run python scripts/gen_coar.py",
         '"""',
         "",
@@ -117,9 +117,10 @@ def main() -> None:
     # here would silently resolve to the SUPERPROJECT's HEAD.
     if not XSD.is_file():
         sys.exit(f"missing {XSD}; run `git submodule update --init`")
-    # Full sha: --short is a *minimum* width and can widen after a fetch,
-    # which would alter the header and trip vocab_sync without any change
-    # in vocabulary.
+    # Full sha, for console messages only: the rendered module deliberately
+    # carries no pin, so a submodule bump without vocabulary changes cannot
+    # trip --check. (A short sha is a *minimum* width and can widen after a
+    # fetch, which is fine now that the sha is not embedded anywhere.)
     pin = subprocess.run(
         ["git", "-C", str(XSD.parent.parent), "rev-parse", "HEAD"],
         check=True,
@@ -128,7 +129,7 @@ def main() -> None:
     ).stdout.strip()
     concepts = read_concepts()
     check_member_names(concepts)
-    text = render(concepts, pin)
+    text = render(concepts)
     try:
         compile(text, str(TARGET), "exec")
     except SyntaxError as exc:  # pragma: no cover - vocabulary should never do this
