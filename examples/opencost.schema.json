@@ -42,7 +42,7 @@
     },
     "BibliographicInformation": {
       "additionalProperties": false,
-      "description": "Block of bibliographic metadata describing the publication (\u00a72.2).\n\nThis serves as a backup and only has to be given if no `doi` can be\nprovided. Contains a subset of Dublin Core elements.",
+      "description": "Block of bibliographic metadata describing the publication (\u00a72.3).\n\nThis serves as a backup and should only be used if no other persistent\nidentifier is available. Contains a subset of Dublin Core elements.",
       "properties": {
         "Title": {
           "description": "Title of the publication. Dublin Core term (http://purl.org/dc/terms/title).",
@@ -51,22 +51,29 @@
           "type": "string"
         },
         "Publisher": {
-          "description": "Publisher of the journal. Dublin Core term (http://purl.org/dc/terms/publisher).",
+          "description": "Publisher of the publication. Dublin Core term (http://purl.org/dc/terms/publisher).",
           "minLength": 1,
           "title": "Publisher",
           "type": "string"
         },
         "isPartOf": {
-          "description": "Name of the journal. Dublin Core term (http://purl.org/dc/terms/isPartOf).",
-          "minLength": 1,
-          "title": "Ispartof",
-          "type": "string"
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bibliographic host item relation, like a journal (for articles) or a book (for book chapters). Dublin Core term (http://purl.org/dc/terms/isPartOf).",
+          "title": "Ispartof"
         }
       },
       "required": [
         "Title",
-        "Publisher",
-        "isPartOf"
+        "Publisher"
       ],
       "title": "BibliographicInformation",
       "type": "object"
@@ -1145,6 +1152,26 @@
       "title": "PublicationCostType",
       "type": "string"
     },
+    "PublicationHostItemType": {
+      "additionalProperties": false,
+      "description": "Bibliographic host item the publication belongs to (\u00a78).\n\nMay be used to store information on a bibliographic host item, like the\nISBN for a book if the publication describes a book chapter.",
+      "properties": {
+        "id": {
+          "description": "Persistent identifiers of the host item.",
+          "items": {
+            "$ref": "#/$defs/PublicationPrimaryIdType"
+          },
+          "minItems": 1,
+          "title": "Id",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "PublicationHostItemType",
+      "type": "object"
+    },
     "PublicationInvoiceType": {
       "additionalProperties": false,
       "description": "Encapsulates payment information, meant to correspond to a real-world\ninvoice (\u00a77.2).",
@@ -1205,14 +1232,49 @@
       "title": "PublicationInvoiceType",
       "type": "object"
     },
+    "PublicationPrimaryIdType": {
+      "additionalProperties": false,
+      "description": "Primary identifier for the publication (\u00a72.2).",
+      "properties": {
+        "value": {
+          "description": "Identifier value.",
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/PublicationPrimaryIdTypeEnum",
+          "description": "Identifier scheme of `value`."
+        }
+      },
+      "required": [
+        "value",
+        "type"
+      ],
+      "title": "PublicationPrimaryIdType",
+      "type": "object"
+    },
+    "PublicationPrimaryIdTypeEnum": {
+      "description": "Primary identifier scheme (\u00a72.2.1).\n\nA DOI should be the preferred option; other persistent identifier types\nexist mainly as backup.",
+      "enum": [
+        "doi",
+        "handle",
+        "urn",
+        "isbn",
+        "arxiv",
+        "ark"
+      ],
+      "title": "PublicationPrimaryIdTypeEnum",
+      "type": "string"
+    },
     "PublicationPrimaryIdentifier": {
-      "description": "Contains the primary identifier for the publication (\u00a72).\n\nA `doi` is strongly preferred, otherwise a `bibliographic_information`\nblock has to be provided instead.",
+      "description": "Contains the primary identifier for the publication (\u00a72).\n\nExactly one of `doi`, `id` or `bibliographic_information` has to be\nprovided. A persistent identifier is preferred: `id` (or its deprecated\npredecessor `doi`), with `bibliographic_information` as the backup.",
       "oneOf": [
         {
           "additionalProperties": false,
           "properties": {
             "doi": {
-              "description": "Digital Object Identifier (doi) to identify the publication. Serves as primary identifier.",
+              "description": "Digital Object Identifier (doi) to identify the publication. Deprecated; kept for backwards compatibility, use `id` instead.",
               "minLength": 1,
               "type": "string"
             }
@@ -1225,9 +1287,22 @@
         {
           "additionalProperties": false,
           "properties": {
+            "id": {
+              "$ref": "#/$defs/PublicationPrimaryIdType",
+              "description": "Primary identifier for the publication."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
             "bibliographic_information": {
               "$ref": "#/$defs/BibliographicInformation",
-              "description": "Backup description; only has to be given if no `doi` can be provided."
+              "description": "Backup description; only has to be given if no persistent identifier can be provided."
             }
           },
           "required": [
@@ -1272,7 +1347,9 @@
         "pmc",
         "arxiv",
         "oai",
-        "local"
+        "local",
+        "ark",
+        "purl"
       ],
       "title": "PublicationSecondaryIdTypeEnum",
       "type": "string"
@@ -1314,6 +1391,18 @@
             }
           ],
           "default": null
+        },
+        "host_item": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicationHostItemType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bibliographic host item this publication belongs to, like the ISBN for a book if the publication describes a book chapter."
         },
         "institution": {
           "$ref": "#/$defs/InstitutionType",

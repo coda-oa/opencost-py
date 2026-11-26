@@ -24,8 +24,10 @@ from opencost import (
     PublicationAmountsPaid,
     PublicationCostDataType,
     PublicationCostType,
+    PublicationHostItemType,
     PublicationInvoiceType,
     PublicationPrimaryIdentifier,
+    PublicationPrimaryIdType,
     PublicationType,
 )
 
@@ -71,6 +73,8 @@ def test_public_api_round_trip_types() -> None:
         ),
     )
     assert_type(publication.primary_identifier.doi, str | None)
+    assert_type(publication.primary_identifier.id, PublicationPrimaryIdType | None)
+    assert_type(publication.host_item, PublicationHostItemType | None)
     assert_type(publication.external_costsplitting, bool | None)
     assert_type(publication.cost_data.invoice, list[PublicationInvoiceType] | None)
 

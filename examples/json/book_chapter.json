@@ -1,0 +1,63 @@
+{
+  "data": {
+    "publication": [
+      {
+        "primary_identifier": {
+          "id": {
+            "value": "10.4324/9781003466109-11",
+            "type": "doi"
+          }
+        },
+        "host_item": {
+          "id": [
+            {
+              "value": "10.4324/9781003466109",
+              "type": "doi"
+            },
+            {
+              "value": "9781003466109",
+              "type": "isbn"
+            }
+          ]
+        },
+        "institution": {
+          "name": [
+            {
+              "value": "SLU",
+              "type": "short"
+            },
+            {
+              "value": "Swedish University of Agricultural Sciences",
+              "type": "full"
+            }
+          ],
+          "id": [
+            {
+              "value": "https://ror.org/02yy8x990",
+              "type": "ror"
+            }
+          ]
+        },
+        "publication_type": "book part",
+        "cost_data": {
+          "invoice": [
+            {
+              "amounts_paid": {
+                "amount_paid": [
+                  {
+                    "currency": "EUR",
+                    "amount": "1499.74",
+                    "cost_type": "gold-oa"
+                  }
+                ]
+              },
+              "dates": {
+                "paid": "2025"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

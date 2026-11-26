@@ -20,8 +20,11 @@ from opencost import (
     PublicationAmountsPaid,
     PublicationCostDataType,
     PublicationCostType,
+    PublicationHostItemType,
     PublicationInvoiceType,
     PublicationPrimaryIdentifier,
+    PublicationPrimaryIdType,
+    PublicationPrimaryIdTypeEnum,
     from_xml,
     to_xml,
 )
@@ -51,6 +54,45 @@ def test__mixed_document__validates_against_xsd(schema: etree.XMLSchema) -> None
         schema,
         Data(publication=[make_publication()], contract=[make_contract()]),
     )
+
+
+def test__publication_with_primary_id_and_host_item__validates_against_xsd(
+    schema: etree.XMLSchema,
+) -> None:
+    pub = make_publication(
+        primary_identifier=PublicationPrimaryIdentifier(
+            id=PublicationPrimaryIdType(
+                type=PublicationPrimaryIdTypeEnum.doi,
+                value="10.4324/9781003466109-11",
+            )
+        ),
+        host_item=PublicationHostItemType(
+            id=[
+                PublicationPrimaryIdType(
+                    type=PublicationPrimaryIdTypeEnum.doi,
+                    value="10.4324/9781003466109",
+                ),
+                PublicationPrimaryIdType(
+                    type=PublicationPrimaryIdTypeEnum.isbn,
+                    value="9781003466109",
+                ),
+            ]
+        ),
+    )
+    assert_valid(schema, Data(publication=[pub]))
+
+
+def test__publication_without_is_part_of__validates_against_xsd(
+    schema: etree.XMLSchema,
+) -> None:
+    pub = make_publication(
+        primary_identifier=PublicationPrimaryIdentifier(
+            bibliographic_information=BibliographicInformation(
+                Title="A Paper", Publisher="Some Publisher"
+            )
+        )
+    )
+    assert_valid(schema, Data(publication=[pub]))
 
 
 def test__publication_without_doi__validates_against_xsd(

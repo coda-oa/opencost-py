@@ -36,8 +36,11 @@ from opencost import (
     PublicationAmountsPaid,
     PublicationCostDataType,
     PublicationCostType,
+    PublicationHostItemType,
     PublicationInvoiceType,
     PublicationPrimaryIdentifier,
+    PublicationPrimaryIdType,
+    PublicationPrimaryIdTypeEnum,
     PublicationSecondaryIdentifiers,
     PublicationSecondaryIdType,
     PublicationSecondaryIdTypeEnum,
@@ -133,6 +136,50 @@ def test__publication__emits_all_elements() -> None:
     assert find(amount_paid, "oc:vat").text == "342.00"
 
 
+def test__publication_with_primary_id__emits_id_element() -> None:
+    pub = make_publication(
+        primary_identifier=PublicationPrimaryIdentifier(
+            id=PublicationPrimaryIdType(type=PublicationPrimaryIdTypeEnum.doi, value="10.1234/abcd")
+        )
+    )
+    root = parse(Data(publication=[pub]))
+
+    primary = find(root, "oc:publication/oc:primary_identifier")
+    assert primary.find("oc:doi", NS) is None
+    assert find(primary, "oc:id/oc:value").text == "10.1234/abcd"
+    assert find(primary, "oc:id/oc:type").text == "doi"
+
+
+def test__publication_host_item__emits_repeated_ids() -> None:
+    pub = make_publication(
+        host_item=PublicationHostItemType(
+            id=[
+                PublicationPrimaryIdType(
+                    type=PublicationPrimaryIdTypeEnum.doi,
+                    value="10.4324/9781003466109",
+                ),
+                PublicationPrimaryIdType(
+                    type=PublicationPrimaryIdTypeEnum.isbn,
+                    value="9781003466109",
+                ),
+            ]
+        )
+    )
+    root = parse(Data(publication=[pub]))
+
+    ids = root.findall("oc:publication/oc:host_item/oc:id", NS)
+    assert len(ids) == 2
+    assert find(ids[0], "oc:value").text == "10.4324/9781003466109"
+    assert find(ids[0], "oc:type").text == "doi"
+    assert find(ids[1], "oc:value").text == "9781003466109"
+    assert find(ids[1], "oc:type").text == "isbn"
+
+
+def test__publication_without_host_item__omits_element() -> None:
+    root = parse(Data(publication=[make_publication()]))
+    assert root.find("oc:publication/oc:host_item", NS) is None
+
+
 def test__publication_without_doi__emits_bibliographic_information() -> None:
     pub = make_publication(
         primary_identifier=PublicationPrimaryIdentifier(
@@ -151,6 +198,21 @@ def test__publication_without_doi__emits_bibliographic_information() -> None:
     assert find(bio, "oc:Title").text == "A Paper"
     assert find(bio, "oc:Publisher").text == "Some Publisher"
     assert find(bio, "oc:isPartOf").text == "Journal of Costs"
+
+
+def test__bibliographic_information_without_is_part_of__omits_element() -> None:
+    pub = make_publication(
+        primary_identifier=PublicationPrimaryIdentifier(
+            bibliographic_information=BibliographicInformation(
+                Title="A Paper",
+                Publisher="Some Publisher",
+            )
+        )
+    )
+    root = parse(Data(publication=[pub]))
+
+    bio = find(root, "oc:publication/oc:primary_identifier/oc:bibliographic_information")
+    assert bio.find("oc:isPartOf", NS) is None
 
 
 def test__external_costsplitting__formats_as_xsd_boolean() -> None:

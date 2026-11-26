@@ -14,7 +14,10 @@ from opencost import (
     InstitutionType,
     ParticipationType,
     PublicationCostDataType,
+    PublicationHostItemType,
     PublicationPrimaryIdentifier,
+    PublicationPrimaryIdType,
+    PublicationPrimaryIdTypeEnum,
     PublicationSecondaryIdentifiers,
 )
 
@@ -24,9 +27,16 @@ def test__publication_secondary_identifier__needs_at_least_one_id() -> None:
         _ = PublicationSecondaryIdentifiers(id=[])
 
 
-def test__publication_primary_identifier__needs_doi_or_bibliographic_information() -> None:
+def test__publication_host_item__needs_at_least_one_id() -> None:
     with pytest.raises(ValueError):
-        _ = PublicationPrimaryIdentifier(doi=None, bibliographic_information=None)
+        _ = PublicationHostItemType(id=[])
+
+
+def test__publication_primary_identifier__needs_exactly_one_identifier() -> None:
+    with pytest.raises(ValueError):
+        _ = PublicationPrimaryIdentifier()
+    with pytest.raises(ValueError):
+        _ = PublicationPrimaryIdentifier(doi=None, id=None, bibliographic_information=None)
 
 
 def test__publication_cost_data_type__needs_either_invoice_or_contract() -> None:
@@ -66,6 +76,21 @@ def test__publication_primary_identifier__rejects_doi_and_bibliographic_informat
             bibliographic_information=BibliographicInformation(
                 Title="T", Publisher="P", isPartOf="J"
             ),
+        )
+
+
+def test__publication_primary_identifier__rejects_id_combined_with_other_identifier() -> None:
+    from opencost import BibliographicInformation
+
+    identifier = PublicationPrimaryIdType(
+        type=PublicationPrimaryIdTypeEnum.doi, value="10.1234/abcd"
+    )
+    with pytest.raises(ValueError):
+        _ = PublicationPrimaryIdentifier(doi="10.1234/abcd", id=identifier)
+    with pytest.raises(ValueError):
+        _ = PublicationPrimaryIdentifier(
+            id=identifier,
+            bibliographic_information=BibliographicInformation(Title="T", Publisher="P"),
         )
 
 
@@ -219,3 +244,27 @@ def test__contract_secondary_id__accepts_new_wire_values() -> None:
 
     for wire in ("ESAC", "opencostid"):
         assert ContractSecondaryIdType(type=wire, value="x").type.value == wire  # type: ignore[arg-type]
+
+
+def test__publication_primary_id__accepts_only_primary_vocab() -> None:
+    for wire in ("doi", "handle", "urn", "isbn", "arxiv", "ark"):
+        assert PublicationPrimaryIdType(type=wire, value="x").type.value == wire  # type: ignore[arg-type]
+
+    # `purl`/`pmid`/`pmc`/`oai`/`local` are secondary-only schemes upstream.
+    for wire in ("purl", "pmid", "pmc", "oai", "local"):
+        with pytest.raises(ValueError):
+            PublicationPrimaryIdType(type=wire, value="x")  # type: ignore[arg-type]
+
+
+def test__publication_secondary_id__accepts_new_wire_values() -> None:
+    from opencost import PublicationSecondaryIdType
+
+    for wire in ("ark", "purl"):
+        assert PublicationSecondaryIdType(type=wire, value="x").type.value == wire  # type: ignore[arg-type]
+
+
+def test__bibliographic_information__is_part_of_is_optional() -> None:
+    from opencost import BibliographicInformation
+
+    info = BibliographicInformation(Title="T", Publisher="P")
+    assert info.isPartOf is None

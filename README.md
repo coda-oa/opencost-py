@@ -8,7 +8,8 @@ openCost describes two top-level entities, both collectable in one
 `opencost:data` document:
 
 - `publication` — a single article (or other publication) and its costs:
-  identifiers, paying institution, COAR publication type, and `cost_data`
+  identifiers (primary and secondary), bibliographic host item, paying
+  institution, COAR publication type, and `cost_data`
   (invoices with itemized amounts, or a link to a contract).
 - `contract` — payment models such as transformative agreements,
   memberships, or subscriptions, with grouped invoices per accounting period.
@@ -107,9 +108,11 @@ this package adds on top.
 - either/or — `EitherFieldMixin` stands in for an `xs:choice`: `Dates` needs
   `invoice` or `paid`, `Data` needs `publication` or `contract`,
   `InstitutionType` needs `name` or `id`;
-- exactly-one — `PublicationPrimaryIdentifier` takes a `doi` **or** a
-  `bibliographic_information` block, never both or neither, matching an
-  `xs:choice` whose members are both required;
+- exactly-one — `PublicationPrimaryIdentifier` takes exactly one of `doi`,
+  `id` or `bibliographic_information`, matching an `xs:choice` whose members
+  are all required. `doi` is kept for backwards compatibility; the `id`
+  block carries a `type` (`doi`, `handle`, `urn`, `isbn`, `arxiv`, `ark`)
+  plus its `value`;
 - patterns — `Currency` is three uppercase letters and `DateFormat` is
   `YYYY`, `YYYY-MM` or `YYYY-MM-DD`, both spelled as `xs:pattern`; text fields
   built on `NonEmptyString` reject `""` via `xs:minLength`;

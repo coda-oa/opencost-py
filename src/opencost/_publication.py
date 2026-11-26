@@ -30,6 +30,30 @@ class PublicationSecondaryIdTypeEnum(Enum):
     arxiv = "arxiv"
     oai = "oai"
     local = "local"
+    ark = "ark"
+    purl = "purl"
+
+
+class PublicationPrimaryIdTypeEnum(Enum):
+    """Primary identifier scheme (§2.2.1).
+
+    A DOI should be the preferred option; other persistent identifier types
+    exist mainly as backup.
+    """
+
+    doi = "doi"
+    handle = "handle"
+    urn = "urn"
+    isbn = "isbn"
+    arxiv = "arxiv"
+    ark = "ark"
+
+
+class PublicationPrimaryIdType(OpenCostModel):
+    """Primary identifier for the publication (§2.2)."""
+
+    value: NonEmptyString = Field(description="Identifier value.")
+    type: PublicationPrimaryIdTypeEnum = Field(description="Identifier scheme of `value`.")
 
 
 class PublicationSecondaryIdType(OpenCostModel):
@@ -52,45 +76,76 @@ class PublicationSecondaryIdentifiers(OpenCostModel):
 
 
 class BibliographicInformation(OpenCostModel):
-    """Block of bibliographic metadata describing the publication (§2.2).
+    """Block of bibliographic metadata describing the publication (§2.3).
 
-    This serves as a backup and only has to be given if no `doi` can be
-    provided. Contains a subset of Dublin Core elements.
+    This serves as a backup and should only be used if no other persistent
+    identifier is available. Contains a subset of Dublin Core elements.
     """
 
     Title: NonEmptyString = Field(
         description="Title of the publication. Dublin Core term (http://purl.org/dc/terms/title)."
     )
     Publisher: NonEmptyString = Field(
-        description="Publisher of the journal. Dublin Core term "
+        description="Publisher of the publication. Dublin Core term "
         "(http://purl.org/dc/terms/publisher)."
     )
-    isPartOf: NonEmptyString = Field(
-        description="Name of the journal. Dublin Core term (http://purl.org/dc/terms/isPartOf)."
+    isPartOf: NonEmptyString | None = Field(
+        default=None,
+        description="Bibliographic host item relation, like a journal (for "
+        "articles) or a book (for book chapters). Dublin Core term "
+        "(http://purl.org/dc/terms/isPartOf).",
     )
+
+
+class PublicationHostItemType(OpenCostModel):
+    """Bibliographic host item the publication belongs to (§8).
+
+    May be used to store information on a bibliographic host item, like the
+    ISBN for a book if the publication describes a book chapter.
+    """
+
+    id: Annotated[
+        list[PublicationPrimaryIdType],
+        Field(
+            min_length=1,
+            description="Persistent identifiers of the host item.",
+        ),
+    ]
 
 
 class PublicationPrimaryIdentifier(OpenCostModel):
     """Contains the primary identifier for the publication (§2).
 
-    A `doi` is strongly preferred, otherwise a `bibliographic_information`
-    block has to be provided instead.
+    Exactly one of `doi`, `id` or `bibliographic_information` has to be
+    provided. A persistent identifier is preferred: `id` (or its deprecated
+    predecessor `doi`), with `bibliographic_information` as the backup.
     """
 
     doi: NonEmptyString | None = Field(
         default=None,
         description="Digital Object Identifier (doi) to identify the "
-        "publication. Serves as primary identifier.",
+        "publication. Deprecated; kept for backwards compatibility, use `id` "
+        "instead.",
+    )
+    id: PublicationPrimaryIdType | None = Field(
+        default=None,
+        description="Primary identifier for the publication.",
     )
     bibliographic_information: BibliographicInformation | None = Field(
         default=None,
-        description="Backup description; only has to be given if no `doi` can be provided.",
+        description="Backup description; only has to be given if no "
+        "persistent identifier can be provided.",
     )
 
     @model_validator(mode="after")
-    def _exactly_one_of_doi_or_bibliographic_information(self) -> Self:
-        if (self.doi is not None) == (self.bibliographic_information is not None):
-            raise ValueError("exactly one of 'doi' or 'bibliographic_information' must be set")
+    def _exactly_one_identifier(self) -> Self:
+        present = sum(
+            value is not None for value in (self.doi, self.id, self.bibliographic_information)
+        )
+        if present != 1:
+            raise ValueError(
+                "exactly one of 'doi', 'id' or 'bibliographic_information' must be set"
+            )
         return self
 
     @classmethod
@@ -99,8 +154,8 @@ class PublicationPrimaryIdentifier(OpenCostModel):
     ) -> JsonSchemaValue:
         """Mirror the exactly-one-of model validator as JSON Schema ``oneOf``.
         Pydantic cannot derive ``oneOf`` from ``mode="after"`` validators, so
-        the flat two-optional-fields shape is rewritten: each branch requires
-        exactly one of the two fields, with the generated property schema
+        the flat all-optional-fields shape is rewritten: each branch requires
+        exactly one of the fields, with the generated property schema
         (minus the ``null`` alternative) as the branch's only property.
         """
         schema = handler(core_schema)
@@ -116,7 +171,7 @@ class PublicationPrimaryIdentifier(OpenCostModel):
                     }
                 },
             }
-            for name in ("doi", "bibliographic_information")
+            for name in ("doi", "id", "bibliographic_information")
         ]
         # Branches carry their own ``additionalProperties``; the parent's
         # would reject every key now that ``properties`` is gone.
@@ -175,6 +230,11 @@ class PublicationType(OpenCostModel):
 
     primary_identifier: PublicationPrimaryIdentifier
     secondary_identifiers: PublicationSecondaryIdentifiers | None = None
+    host_item: PublicationHostItemType | None = Field(
+        default=None,
+        description="Bibliographic host item this publication belongs to, "
+        "like the ISBN for a book if the publication describes a book chapter.",
+    )
     institution: InstitutionType = Field(
         description="Contains information to identify the paying institution."
     )

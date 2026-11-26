@@ -40,9 +40,12 @@ from ._institution import InstitutionName as InstitutionName
 from ._institution import InstitutionNameType as InstitutionNameType
 from ._publication import PublicationType as PublicationType
 from ._publication import PublicationPrimaryIdentifier as PublicationPrimaryIdentifier
+from ._publication import PublicationPrimaryIdType as PublicationPrimaryIdType
+from ._publication import PublicationPrimaryIdTypeEnum as PublicationPrimaryIdTypeEnum
 from ._publication import PublicationSecondaryIdType as PublicationSecondaryIdType
 from ._publication import PublicationSecondaryIdTypeEnum as PublicationSecondaryIdTypeEnum
 from ._publication import PublicationSecondaryIdentifiers as PublicationSecondaryIdentifiers
+from ._publication import PublicationHostItemType as PublicationHostItemType
 from ._publication import BibliographicInformation as BibliographicInformation
 from ._coar import CoarPublicationType as CoarPublicationType
 from ._publication import PublicationCostDataType as PublicationCostDataType
@@ -85,9 +88,12 @@ __all__ = [
     "InstitutionNameType",
     "PublicationType",
     "PublicationPrimaryIdentifier",
+    "PublicationPrimaryIdType",
+    "PublicationPrimaryIdTypeEnum",
     "PublicationSecondaryIdType",
     "PublicationSecondaryIdTypeEnum",
     "PublicationSecondaryIdentifiers",
+    "PublicationHostItemType",
     "BibliographicInformation",
     "CoarPublicationType",
     "PartOfContractType",
